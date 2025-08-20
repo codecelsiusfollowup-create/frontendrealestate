@@ -11,7 +11,8 @@ import ManageStaff from "./pages/DealerDashboard/ManageStaff";
 import PostPropertyPage from "./pages/AdminDashboard/postpropert/mainpost";
 import PropertyDetailPage from "./pages/AdminDashboard/PropertyDetailPage/PropertyDetailPage";
 import Addlead from "./pages/AdminDashboard/addLead/addlead";
-import PropertyList from "./pages/AdminDashboard/property-list/PropertyList";
+import PropertyList from "./pages/AdminDashboard/property-list/property-list";
+
 
 function App() {
   return (
