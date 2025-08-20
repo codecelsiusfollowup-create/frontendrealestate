@@ -37,8 +37,8 @@ export default function DashboardLayout({ title = "Dashboard", children }) {
         label: "Lead",
         icon: <UserPlus size={20} />,
         submenu: [
-          { to: "/admin/lead/all", label: "All Leads", icon: <Dot size={40} /> },
-          { to: "/admin/lead/filter", label: "Filter Leads", icon: <Dot size={40} /> },
+          { to: "/admin/leadall", label: "All Leads", icon: <Dot size={40} /> },
+          { to: "/admin/leadfilter", label: "Filter Leads", icon: <Dot size={40} /> },
           { to: "/admin/addlead", label: "Add Basic Leads", icon: <Dot size={40} /> },
         ],
       },

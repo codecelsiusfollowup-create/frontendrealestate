@@ -10,8 +10,10 @@ import CreateStaff from "./pages/DealerDashboard/CreateStaff";
 import ManageStaff from "./pages/DealerDashboard/ManageStaff";
 import PostPropertyPage from "./pages/AdminDashboard/postpropert/mainpost";
 import PropertyDetailPage from "./pages/AdminDashboard/PropertyDetailPage/PropertyDetailPage";
-import Addlead from "./pages/AdminDashboard/addLead/Addlead";
+import CreateLead from "./pages/AdminDashboard/Unique-Leads/CreateLead";
 import PropertyList from "./pages/AdminDashboard/property-list/PropertyList";
+import NewLeads from "./pages/AdminDashboard/Unique-Leads/NewLeads";
+import FilterLead from "./pages/AdminDashboard/Unique-Leads/FilterLead";
 
 
 function App() {
@@ -24,7 +26,9 @@ function App() {
         <Route path="/admin/postproperty" element={<PostPropertyPage/>} />
         <Route path="/admin/property-list" element={<PropertyList/>} />
         <Route path="/admin/property/:id" element={<PropertyDetailPage/>} />
-        <Route path="/admin/addlead" element={<Addlead/>} />
+        <Route path="/admin/addlead" element={<CreateLead/>} />
+        <Route path="/admin/leadall" element={<NewLeads/>}/>
+        <Route path="/admin/leadfilter" element={<FilterLead/>}/>
 
 
         <Route path="/dealer" element={<ProtectedRoute><DealerDashboard /></ProtectedRoute>} />
