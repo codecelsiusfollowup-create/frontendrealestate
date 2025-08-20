@@ -9,7 +9,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import CreateStaff from "./pages/DealerDashboard/CreateStaff";
 import ManageStaff from "./pages/DealerDashboard/ManageStaff";
 import PostPropertyPage from "./pages/AdminDashboard/postpropert/mainpost";
-import PropertyList from "./pages/AdminDashboard/property-list/property-list";
+import PropertyList from "./pages/AdminDashboard/property-list/Property-list";
 import PropertyDetailPage from "./pages/AdminDashboard/PropertyDetailPage/PropertyDetailPage";
 import Addlead from "./pages/AdminDashboard/addLead/addlead";
 
