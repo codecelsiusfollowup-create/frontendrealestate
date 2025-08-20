@@ -10,7 +10,7 @@ import CreateStaff from "./pages/DealerDashboard/CreateStaff";
 import ManageStaff from "./pages/DealerDashboard/ManageStaff";
 import PostPropertyPage from "./pages/AdminDashboard/postpropert/mainpost";
 import PropertyDetailPage from "./pages/AdminDashboard/PropertyDetailPage/PropertyDetailPage";
-import Addlead from "./pages/AdminDashboard/addLead/addlead";
+import Addlead from "./pages/AdminDashboard/addLead/Addlead";
 import PropertyList from "./pages/AdminDashboard/property-list/PropertyList";
 
 
