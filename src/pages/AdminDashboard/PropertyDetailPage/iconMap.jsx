@@ -1,0 +1,40 @@
+import React from "react";
+import {
+  Lightbulb,
+  Fan,
+  Tv,
+  AirVent,
+  Bed,
+  Flame,
+  Shirt,
+  WashingMachine,
+  Refrigerator,
+  CookingPot,
+  ChefHat,
+  Utensils,
+  Sofa,
+  Droplets,
+  PanelsTopLeft,
+  Frame,
+} from "lucide-react";
+
+export const furnishingIcons = {
+  Light: (props) => <Lightbulb {...props} />,
+  Fans: (props) => <Fan {...props} />,
+  TV: (props) => <Tv {...props} />,
+  AC: (props) => <AirVent {...props} />,
+  Beds: (props) => <Bed {...props} />,
+  Geyser: (props) => <Flame {...props} />,
+  Wardrobe: (props) => <Shirt {...props} />,
+  WashingMachine: (props) => <WashingMachine {...props} />,
+  Fridge: (props) => <Refrigerator {...props} />,
+  Chimney: (props) => <CookingPot {...props} />,
+  ExhaustFan: (props) => <AirVent {...props} />,
+  Stove: (props) => <ChefHat {...props} />,
+  Microwave: (props) => <Utensils {...props} />,
+  DinningTable: (props) => <Utensils {...props} />,
+  Sofa: (props) => <Sofa {...props} />,
+  WaterPurifier: (props) => <Droplets {...props} />,
+  ModularKitchen: (props) => <PanelsTopLeft {...props} />,
+  Curtains: (props) => <Frame {...props} />, // ✅ safe icon
+};
