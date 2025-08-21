@@ -8,7 +8,7 @@ export default function ManageDealers() {
     const fetchDealers = async () => {
       const token = localStorage.getItem("token");
       try {
-        const res = await axios.get("https://a-new-vercel.onrender.com/api/users/dealers", {
+        const res = await axios.get("https://a-new-vercel.vercel.app/api/users/dealers", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setDealers(res.data);
@@ -26,7 +26,7 @@ export default function ManageDealers() {
 
     const token = localStorage.getItem("token");
     try {
-      await axios.delete(`https://a-new-vercel.onrender.com/api/users/${id}`, {
+      await axios.delete(`https://a-new-vercel.vercel.app/api/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setDealers((prev) => prev.filter((dealer) => dealer._id !== id));

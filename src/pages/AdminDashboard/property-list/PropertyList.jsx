@@ -16,7 +16,7 @@
 //     // ✅ Global fetch function
 //     const fetchProperties = async () => {
 //         try {
-//             const res = await axios.get("https://a-new-vercel.onrender.com/api/properties");
+//             const res = await axios.get("https://a-new-vercel.vercel.app/api/properties");
 
 //             // res.data = { properties: [...], total: 1 }
 
@@ -40,7 +40,7 @@
 //         if (!confirmDelete) return;
 
 //         try {
-//             await axios.delete(`https://a-new-vercel.onrender.com/api/properties/${propertyId}`);
+//             await axios.delete(`https://a-new-vercel.vercel.app/api/properties/${propertyId}`);
 //             alert("Property deleted successfully");
 //             fetchProperties(); // Refresh after delete
 //         } catch (err) {
@@ -157,7 +157,7 @@ export default function PropertyList({ onSearchResults }) {
     // ✅ Fetch Properties
     const fetchProperties = async () => {
         try {
-            const res = await axios.get("https://a-new-vercel.onrender.com/api/properties");
+            const res = await axios.get("https://a-new-vercel.vercel.app/api/properties");
             setProperties(res.data || []); // safe fallback
             setFilteredProperties(res.data || []);
             console.log(res.data)

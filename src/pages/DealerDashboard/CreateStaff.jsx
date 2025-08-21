@@ -35,7 +35,7 @@ export default function CreateStaff() {
     }
 
     try {
-      await axios.post("https://a-new-vercel.onrender.com/api/auth/register", {
+      await axios.post("https://a-new-vercel.vercel.app/api/auth/register", {
         ...formData,
         role: "staff",
         dealerId,

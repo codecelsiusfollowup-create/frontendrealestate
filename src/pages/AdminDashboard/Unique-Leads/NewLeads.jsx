@@ -46,7 +46,7 @@ export default function NewLeads() {
   useEffect(() => {
     const fetchLeads = async () => {
       try {
-        const res = await axios.get("https://a-new-vercel.onrender.com/api/leads");
+        const res = await axios.get("https://a-new-vercel.vercel.app/api/leads");
         if (Array.isArray(res.data)) {
           setLeads(res.data);
         } else if (Array.isArray(res.data.data)) {
