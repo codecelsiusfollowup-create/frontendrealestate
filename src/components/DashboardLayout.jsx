@@ -1,7 +1,19 @@
 // components/DashboardLayout.jsx
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, LogOut, Users, Home, Building2, List, UserPlus, ChevronDown, ChevronUp, Dot } from "lucide-react";
+import {
+  Menu,
+  X,
+  LogOut,
+  Users,
+  Home,
+  Building2,
+  List,
+  UserPlus,
+  ChevronDown,
+  ChevronUp,
+  Dot,
+} from "lucide-react";
 import Topbar from "./Topbar";
 
 export default function DashboardLayout({ title = "Dashboard", children }) {
@@ -9,10 +21,13 @@ export default function DashboardLayout({ title = "Dashboard", children }) {
   const [role, setRole] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
-  const [openMenu, setOpenMenu] = useState(null);
+  const [openMenus, setOpenMenus] = useState({});
 
-  const toggleMenu = (label) => {
-    setOpenMenu(openMenu === label ? null : label);
+  const toggleSubmenu = (menu) => {
+    setOpenMenus((prev) => ({
+      ...prev,
+      [menu]: !prev[menu],
+    }));
   };
 
   useEffect(() => {
@@ -43,7 +58,6 @@ export default function DashboardLayout({ title = "Dashboard", children }) {
         ],
       },
     ],
-
     dealer: [
       { to: "/dealer", label: "Dashboard", icon: <Home size={20} /> },
       { to: "/dealer/create-staff", label: "Create Staff", icon: <Users size={20} /> },
@@ -54,23 +68,86 @@ export default function DashboardLayout({ title = "Dashboard", children }) {
 
   const navLinks = links[role] || [];
 
+  // ✅ Helper function for active link
+  const isActive = (path) => location.pathname === path;
 
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Mobile Sidebar */}
-      <div className={`fixed z-40 inset-y-0 left-0 w-64 bg-blue-900 text-white p-4 transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-200 ease-in-out md:hidden`}>
+      <div
+        className={`fixed z-40 inset-y-0 left-0 w-64 bg-blue-900 text-white p-4 transform ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } transition-transform duration-200 ease-in-out md:hidden`}
+      >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold">CRM Dashboard</h2>
-          <button onClick={() => setSidebarOpen(false)}><X /></button>
+          <button onClick={() => setSidebarOpen(false)}>
+            <X />
+          </button>
         </div>
         <nav>
-          {navLinks.map((item,index) => (
-            <Link key={`${item.to}-${index}`} to={item.to} onClick={() => setSidebarOpen(false)} className="flex items-center gap-2 mb-4 hover:text-gray-300">
-              {item.icon} {item.label}
-            </Link>
-          ))}
+          {navLinks.map((item) => {
+            if (item.submenu) {
+              return (
+                <div key={item.label}>
+                  {/* Parent toggle button */}
+                  <button
+                    onClick={() => toggleSubmenu(item.label)}
+                    className="flex items-center justify-between w-full pt-2 pb-2 gap-2 hover:text-gray-300 cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2">
+                      {item.icon} {item.label}
+                    </span>
+                    {openMenus[item.label] ? (
+                      <ChevronUp size={16} />
+                    ) : (
+                      <ChevronDown size={16} />
+                    )}
+                  </button>
+
+                  {/* Submenu */}
+                  {openMenus[item.label] && (
+                    <div className="ml-6">
+                      {item.submenu.map((sub) => (
+                        <Link
+                          key={sub.to}
+                          to={sub.to}
+                          // ✅ sirf sidebar band hoga, submenu ka state same rahega
+                          onClick={() => setSidebarOpen(false)}
+                          className={`block flex items-center rounded px-2 py-1 ${
+                            isActive(sub.to)
+                              ? "bg-[#0a5beb6b] text-white"
+                              : "hover:text-gray-300"
+                          }`}
+                        >
+                          {sub.icon} {sub.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center gap-2 pt-2 pb-2 rounded px-2 ${
+                  isActive(item.to)
+                    ? "bg-[#0a5beb6b] text-white"
+                    : "hover:text-gray-300"
+                }`}
+              >
+                {item.icon} {item.label}
+              </Link>
+            );
+          })}
         </nav>
-        <button onClick={handleLogout} className="flex items-center gap-2 text-red-300 hover:text-white mt-6 cursor-pointer">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2 text-red-300 hover:text-white mt-6 cursor-pointer"
+        >
           <LogOut size={20} /> Logout
         </button>
       </div>
@@ -84,23 +161,30 @@ export default function DashboardLayout({ title = "Dashboard", children }) {
               return (
                 <div key={item.label}>
                   <button
-                    onClick={() => toggleMenu(item.label)}
-                    className="flex items-center justify-between w-full pt-2 pb-2 gap-2 mb-4 hover:text-gray-300 cursor-pointer border-b border-gray-400"
+                    onClick={() => toggleSubmenu(item.label)}
+                    className="flex items-center justify-between w-full pt-2 pb-2 gap-2 hover:text-gray-300 cursor-pointer border-b border-gray-400"
                   >
                     <span className="flex items-center gap-2">
                       {item.icon} {item.label}
                     </span>
-                    <span>
-                      {openMenu === item.label ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                    </span>
+                    {openMenus[item.label] ? (
+                      <ChevronUp size={16} />
+                    ) : (
+                      <ChevronDown size={16} />
+                    )}
                   </button>
-                  {openMenu === item.label && (
-                    <div className="ml-6">
+
+                  {openMenus[item.label] && (
+                    <div>
                       {item.submenu.map((sub) => (
                         <Link
                           key={sub.to}
                           to={sub.to}
-                          className="block mb-2 hover:text-gray-300 flex items-center"
+                          className={`block border-b border-gray-400 flex items-center rounded px-2 py-1 ${
+                            isActive(sub.to)
+                              ? "bg-[#0a5beb6b] text-white"
+                              : "hover:text-gray-300"
+                          }`}
                         >
                           {sub.icon} {sub.label}
                         </Link>
@@ -110,19 +194,25 @@ export default function DashboardLayout({ title = "Dashboard", children }) {
                 </div>
               );
             }
-
             return (
               <Link
                 key={item.to}
                 to={item.to}
-                className="flex items-center gap-2 pt-2 pb-2 hover:text-gray-300 border-b border-gray-400"
+                className={`flex items-center gap-2 pt-2 pb-2 rounded px-2 border-b border-gray-400 ${
+                  isActive(item.to)
+                    ? "bg-[#0a5beb6b] text-white"
+                    : "hover:text-gray-300"
+                }`}
               >
                 {item.icon} {item.label}
               </Link>
             );
           })}
         </nav>
-        <button onClick={handleLogout} className="flex items-center gap-2 text-red-300 hover:text-white cursor-pointer">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2 text-red-300 hover:text-white cursor-pointer"
+        >
           <LogOut size={20} /> Logout
         </button>
       </div>
@@ -131,9 +221,13 @@ export default function DashboardLayout({ title = "Dashboard", children }) {
       <div className="flex-1 flex flex-col overflow-y-auto">
         {/* Mobile Topbar */}
         <header className="md:hidden bg-white shadow px-4 py-3 flex justify-between items-center">
-          <button onClick={() => setSidebarOpen(true)}><Menu size={24} /></button>
+          <button onClick={() => setSidebarOpen(true)}>
+            <Menu size={24} />
+          </button>
           <h1 className="text-lg font-bold">{title}</h1>
-          <button onClick={handleLogout}><LogOut size={24} color="red" /></button>
+          <button onClick={handleLogout}>
+            <LogOut size={24} color="red" />
+          </button>
         </header>
 
         {/* Desktop Topbar */}
