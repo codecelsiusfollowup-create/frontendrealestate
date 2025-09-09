@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import DashboardLayout from "../../../components/DashboardLayout";
 import { CSVLink } from "react-csv";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, RotateCcw, Users, Phone } from "lucide-react";
 
 export default function NewLeads() {
   const [leads, setLeads] = useState([]);
@@ -18,7 +18,6 @@ export default function NewLeads() {
   const [selectedLeads, setSelectedLeads] = useState([]);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
 
-
   const handleStatusChange = (leadId, newStatus) => {
     setLeads((prev) =>
       prev.map((lead) =>
@@ -26,9 +25,6 @@ export default function NewLeads() {
       )
     );
     setEditingStatusId(null);
-
-    // 🔹 API call yaha karna ho toh
-    // axios.put(`/api/leads/${leadId}`, { status: newStatus });
   };
 
   const handleActionChange = (leadId, newAction) => {
@@ -38,9 +34,6 @@ export default function NewLeads() {
       )
     );
     setEditingActionId(null);
-
-    // 🔹 API call yaha karna ho toh
-    // axios.put(`/api/leads/${leadId}`, { action: newAction });
   };
 
   useEffect(() => {
@@ -64,7 +57,6 @@ export default function NewLeads() {
     fetchLeads();
   }, []);
 
-  // 🔹 Tabs list
   const tabs = [
     "All",
     "Fresh Leads",
@@ -79,13 +71,11 @@ export default function NewLeads() {
     "Revisit",
   ];
 
-  // 🔹 Tabs Filter
   const filteredByTab =
     activeTab === "All"
       ? leads
       : leads.filter((lead) => lead.leadStatus === activeTab);
 
-  // 🔹 Search Filter
   const filteredBySearch = filteredByTab.filter((lead) =>
     Object.values(lead).some(
       (val) =>
@@ -94,20 +84,17 @@ export default function NewLeads() {
     )
   );
 
-  // 🔹 Pagination
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = filteredBySearch.slice(indexOfFirstRow, indexOfLastRow);
   const totalPages = Math.ceil(filteredBySearch.length / rowsPerPage);
 
-  // 🔹 Reset Filters
   const handleReset = () => {
     setActiveTab("All");
     setSearchQuery("");
     setCurrentPage(1);
   };
 
-  // 🔹 CSV Headers
   const headers = [
     { label: "Sl No", key: "slNo" },
     { label: "Full Name", key: "fullName" },
@@ -127,7 +114,6 @@ export default function NewLeads() {
     { label: "Last Updated", key: "lastUpdated" },
   ];
 
-  // 🔹 Format CSV Data
   const csvData = filteredBySearch.map((lead, index) => ({
     slNo: index + 1,
     fullName: lead.fullName,
@@ -151,7 +137,6 @@ export default function NewLeads() {
       : "N/A",
   }));
 
-  // 🔹 Scroll functions for Tabs
   const scrollLeft = () => {
     scrollRef.current.scrollBy({ left: -200, behavior: "smooth" });
   };
@@ -161,380 +146,463 @@ export default function NewLeads() {
 
   return (
     <DashboardLayout>
-      <div className="p-4 bg-white rounded-lg shadow-md">
-        {/* 🔹 Tabs Slider */}
-        <div className="relative flex items-center mb-4">
-          <button
-            onClick={scrollLeft}
-            className="absolute left-0 z-10 bg-white shadow-md rounded-full p-2 -ml-3"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <div
-            ref={scrollRef}
-            className="flex space-x-6 overflow-x-auto no-scrollbar mx-8 border-b pb-2"
-          >
-            {tabs.map((tab) => (
+      <div className=" min-h-screen">
+        <div className="bg-white  shadow-lg overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+            <h1 className="text-2xl font-bold text-white">Lead Management</h1>
+            <p className="text-blue-100 mt-1">Manage and track all your leads efficiently</p>
+          </div>
+
+          {/* Tabs Section */}
+          <div className="border-b border-gray-200">
+            <div className="relative">
               <button
-                key={tab}
-                onClick={() => {
-                  setActiveTab(tab);
-                  setCurrentPage(1);
-                }}
-                className={`whitespace-nowrap text-sm font-medium transition-colors ${activeTab === tab
-                  ? "text-blue-600 border-b-2 border-blue-600 pb-2"
-                  : "text-gray-600 hover:text-gray-800 pb-2"
+                onClick={scrollLeft}
+                className="absolute left-0 top-0 bottom-0 z-10 bg-gradient-to-r from-white to-transparent pl-2 pr-4 flex items-center"
+              >
+                <ChevronLeft className="h-5 w-5 text-gray-600" />
+              </button>
+              
+              <div
+                ref={scrollRef}
+                className="flex space-x-1 overflow-x-auto mx-12 py-3 px-2 scrollbar-hide"
+              >
+                {tabs.map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => {
+                      setActiveTab(tab);
+                      setCurrentPage(1);
+                    }}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                      activeTab === tab
+                        ? "bg-blue-100 text-blue-700 shadow-sm"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+              
+              <button
+                onClick={scrollRight}
+                className="absolute right-0 top-0 bottom-0 z-10 bg-gradient-to-l from-white to-transparent pr-2 pl-4 flex items-center"
+              >
+                <ChevronRight className="h-5 w-5 text-gray-600" />
+              </button>
+            </div>
+          </div>
+
+          {/* Controls */}
+          <div className="p-4 bg-gray-50 border-b border-gray-200">
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+              <div className="flex flex-wrap gap-2">
+                <CSVLink
+                  data={csvData}
+                  headers={headers}
+                  filename={`leads_${activeTab}_${new Date().toISOString()}.csv`}
+                  className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Export CSV
+                </CSVLink>
+
+                <button
+                  onClick={handleReset}
+                  className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-sm"
+                >
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  Reset Filters
+                </button>
+
+                <button
+                  onClick={() => setIsAssignModalOpen(true)}
+                  disabled={selectedLeads.length === 0}
+                  className={`inline-flex items-center px-4 py-2 rounded-lg transition-colors shadow-sm ${
+                    selectedLeads.length === 0
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-blue-600 text-white hover:bg-blue-700"
                   }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-          <button
-            onClick={scrollRight}
-            className="absolute right-0 z-10 bg-white shadow-md rounded-full p-2 -mr-3"
-          >
-            <ChevronRight size={20} />
-          </button>
-        </div>
+                >
+                  <Users className="w-4 h-4 mr-2" />
+                  Assign Lead ({selectedLeads.length})
+                </button>
 
-        {/* 🔹 Action Buttons + Search */}
-        <div className="flex items-center justify-between mb-4 flex-wrap">
-          <div className="flex space-x-4 mb-2 sm:mb-0">
-            <CSVLink
-              data={csvData}
-              headers={headers}
-              filename={`leads_${activeTab}_${new Date().toISOString()}.csv`}
-              className="bg-green-500 text-white px-4 py-2 rounded"
-            >
-              Export CSV
-            </CSVLink>
+                <button className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors shadow-sm">
+                  <Phone className="w-4 h-4 mr-2" />
+                  Decrypt Mobile
+                </button>
+              </div>
 
-            <button
-              onClick={handleReset}
-              className="bg-red-500 text-white px-4 py-2 rounded"
-            >
-              Reset Filters
-            </button>
-            <button
-              onClick={() => setIsAssignModalOpen(true)}
-              className={`px-4 py-2 rounded ${selectedLeads.length === 0
-                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                : "bg-blue-400 text-white"
-                }`}
-              disabled={selectedLeads.length === 0}
-            >
-              Assign Lead
-            </button>
-
-            <button className="bg-blue-600 text-white px-4 py-2 rounded">
-              Decrypt Mobile No
-            </button>
+              <div className="relative w-full sm:w-auto">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  placeholder="Search leads..."
+                  className="w-full sm:w-64 pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+                  >
+                    ✖
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
 
-          <div className="flex items-center border rounded px-2">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentPage(1);
-              }}
-              placeholder="Search here"
-              className="outline-none px-2 py-1"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="px-2 text-gray-500"
-              >
-                ✖
-              </button>
-            )}
-            <button className="bg-blue-600 text-white px-3 py-1 rounded">
-              🔍
-            </button>
-          </div>
-        </div>
-
-        {/* 🔹 Table */}
-        {loading ? (
-          <p>Loading leads...</p>
-        ) : (
+          {/* Table */}
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-blue-900 text-white text-sm">
-                  <th className="px-3 py-2"></th>
-                  <th className="px-3 py-2">
-                    <input type="checkbox" />
-                  </th>
-                  <th className="px-3 py-2">Sl No</th>
-                  <th className="px-3 py-2">Full Name</th>
-                  <th className="px-3 py-2">Project Name</th>
-                  <th className="px-3 py-2">Lead Source</th>
-                  <th className="px-3 py-2">Follow Up By</th>
-                  <th className="px-3 py-2">Lead Status</th>
-                  <th className="px-3 py-2">Remark</th>
-                  <th className="px-3 py-2">Created On</th>
-                  <th className="px-3 py-2">Status</th>
-                  <th className="px-3 py-2">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentRows.length > 0 ? (
-                  currentRows.map((lead, index) => (
-                    <React.Fragment key={lead._id}>
-                      <tr className="text-sm border-b hover:bg-gray-100">
-                        <td
-                          className="px-3 py-2 text-blue-600 cursor-pointer"
-                          onClick={() =>
-                            setExpandedRow(
-                              expandedRow === lead._id ? null : lead._id
-                            )
-                          }
-                        >
-                          {expandedRow === lead._id ? "▼" : "▶"}
-                        </td>
-                        {/* Checkbox inside row */}
-                        <td className="px-3 py-2">
-                          <input
-                            type="checkbox"
-                            checked={selectedLeads.includes(lead._id)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setSelectedLeads([...selectedLeads, lead._id]);
-                              } else {
-                                setSelectedLeads(selectedLeads.filter((id) => id !== lead._id));
+            {loading ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              </div>
+            ) : (
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-gray-50 border-b border-gray-200">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <input type="checkbox" className="rounded border-gray-300 text-blue-600" />
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sl No</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Full Name</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Project</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Remark</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Temp</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {currentRows.length > 0 ? (
+                    currentRows.map((lead, index) => (
+                      <React.Fragment key={lead._id}>
+                        <tr className="hover:bg-gray-50 transition-colors">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <button
+                              onClick={() =>
+                                setExpandedRow(
+                                  expandedRow === lead._id ? null : lead._id
+                                )
                               }
-                            }}
-                          />
-                        </td>
-
-                        <td className="px-3 py-2">{indexOfFirstRow + index + 1}</td>
-                        <td className="px-3 py-2">{lead.fullName}</td>
-                        <td className="px-3 py-2">{lead.projectName}</td>
-                        <td className="px-3 py-2">{lead.leadSource}</td>
-                        <td className="px-3 py-2">{lead.followUpBy || "N/A"}</td>
-                        <td className="px-3 py-2">{lead.leadStatus || "N/A"}</td>
-                        <td className="px-3 py-2">{lead.remark}</td>
-                        <td className="px-3 py-2">
-                          {lead.createdAt
-                            ? new Date(lead.createdAt).toLocaleString()
-                            : "N/A"}
-                        </td>
-
-                        {/* 🔹 Status Badge */}
-                        {/* 🔹 Status Inline Editable Badge */}
-                        <td className="px-3 py-2">
-                          {lead._id === editingStatusId ? (
-                            <select
-                              ref={(el) => {
-                                if (el) {
-                                  // select render होते ही open हो जाए
-                                  setTimeout(() => {
-                                    el.focus();
-                                    el.click();
-                                  }, 0);
-                                }
-                              }}
-                              value={lead.status || "Cold"}
-                              onChange={(e) => handleStatusChange(lead._id, e.target.value)}
-                              onBlur={() => setEditingStatusId(null)}
-                              className="border rounded px-2 py-1 text-sm focus:outline-none"
+                              className="text-blue-600 hover:text-blue-800 transition-colors"
                             >
-                              <option value="Hot">Hot</option>
-                              <option value="Warm">Warm</option>
-                              <option value="Cold">Cold</option>
-                            </select>
-                          ) : (
-                            <div
-                              className="flex items-center space-x-1 cursor-pointer"
-                              onClick={() => setEditingStatusId(lead._id)}
-                            >
-                              {lead.status === "Hot" && (
-                                <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs">
-                                  Hot
-                                </span>
-                              )}
-                              {lead.status === "Warm" && (
-                                <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-xs">
-                                  Warm
-                                </span>
-                              )}
-                              {(!lead.status || lead.status === "Cold") && (
-                                <span className="bg-gray-500 text-white px-3 py-1 rounded-full text-xs">
-                                  Cold
-                                </span>
-                              )}
-                            </div>
-                          )}
-                        </td>
-
-                        {/* 🔹 Action Inline Editable Dropdown */}
-                        <td className="px-3 py-2">
-                          {lead._id === editingActionId ? (
-                            <select
-                              ref={(el) => {
-                                if (el) {
-                                  // select render होते ही open हो जाए
-                                  setTimeout(() => {
-                                    el.focus();
-                                    el.click();
-                                  }, 0);
-                                }
-                              }}
-                              value={lead.action || ""}
-                              onChange={(e) => handleActionChange(lead._id, e.target.value)}
-                              onBlur={() => setEditingActionId(null)}
-                              className="border rounded px-2 py-1 text-sm focus:outline-none"
-                            >
-                              <option value="">Select Action</option>
-                              <option value="Crosscall">Crosscall</option>
-                              <option value="Immediate Action">Immediate Action</option>
-                              <option value="Re-Assign">Re-Assign</option>
-                            </select>
-                          ) : (
-                            <div
-                              className="flex items-center space-x-1 cursor-pointer"
-                              onClick={() => setEditingActionId(lead._id)}
-                            >
-                              {lead.action ? (
-                                <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs">
-                                  {lead.action}
-                                </span>
+                              {expandedRow === lead._id ? (
+                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+                                </svg>
                               ) : (
-                                <span className="bg-gray-400 text-white px-3 py-1 rounded-full text-xs">
-                                  Select Action
-                                </span>
+                                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                </svg>
                               )}
-                            </div>
-                          )}
-                        </td>
-                      </tr>
-
-                      {expandedRow === lead._id && (
-                        <tr className="bg-gray-50 border-b">
-                          <td colSpan="12" className="px-6 py-4 text-sm">
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                              <p><strong>History:</strong> ...</p>
-                              <p><strong>Edit Lead:</strong> ✏️</p>
-                              <p><strong>Property Type:</strong> {lead.propertyType || "N/A"}</p>
-                              <p><strong>City:</strong> {lead.city || "N/A"}</p>
-                              <p><strong>Budget:</strong> {lead.budget || "N/A"}</p>
-                              <p><strong>Role Name:</strong> {lead.roleName || "N/A"}</p>
-                              <p><strong>Mobile:</strong> {lead.mobile || "N/A"}</p>
-                              <p><strong>Created By:</strong> {lead.createdBy || "N/A"}</p>
-                              <p>
-                                <strong>Last Updated:</strong>{" "}
-                                {lead.updatedAt
-                                  ? new Date(lead.updatedAt).toLocaleString()
-                                  : "N/A"}
-                              </p>
-                            </div>
+                            </button>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <input
+                              type="checkbox"
+                              checked={selectedLeads.includes(lead._id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedLeads([...selectedLeads, lead._id]);
+                                } else {
+                                  setSelectedLeads(selectedLeads.filter((id) => id !== lead._id));
+                                }
+                              }}
+                              className="rounded border-gray-300 text-blue-600"
+                            />
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {indexOfFirstRow + index + 1}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {lead.fullName}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {lead.projectName}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {lead.leadSource}
+                          </td>
+                         
+                          <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                            {lead.remark}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {lead.createdAt
+                              ? new Date(lead.createdAt).toLocaleDateString()
+                              : "N/A"}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {lead._id === editingStatusId ? (
+                              <select
+                                value={lead.status || "Cold"}
+                                onChange={(e) => handleStatusChange(lead._id, e.target.value)}
+                                onBlur={() => setEditingStatusId(null)}
+                                className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500"
+                              >
+                                <option value="Hot">Hot</option>
+                                <option value="Warm">Warm</option>
+                                <option value="Cold">Cold</option>
+                              </select>
+                            ) : (
+                              <button
+                                onClick={() => setEditingStatusId(lead._id)}
+                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-colors ${
+                                  lead.status === "Hot"
+                                    ? "bg-red-100 text-red-800 hover:bg-red-200"
+                                    : lead.status === "Warm"
+                                    ? "bg-orange-100 text-orange-800 hover:bg-orange-200"
+                                    : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                                }`}
+                              >
+                                {lead.status || "Cold"}
+                              </button>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {lead._id === editingActionId ? (
+                              <select
+                                value={lead.action || ""}
+                                onChange={(e) => handleActionChange(lead._id, e.target.value)}
+                                onBlur={() => setEditingActionId(null)}
+                                className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:ring-2 focus:ring-blue-500"
+                              >
+                                <option value="">Select</option>
+                                <option value="Crosscall">Crosscall</option>
+                                <option value="Immediate Action">Immediate</option>
+                                <option value="Re-Assign">Re-Assign</option>
+                              </select>
+                            ) : (
+                              <button
+                                onClick={() => setEditingActionId(lead._id)}
+                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-colors ${
+                                  lead.action
+                                    ? "bg-blue-100 text-blue-800 hover:bg-blue-200"
+                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                }`}
+                              >
+                                {lead.action || "Select"}
+                              </button>
+                            )}
                           </td>
                         </tr>
-                      )}
-                    </React.Fragment>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="12" className="text-center py-4 text-gray-500">
-                      No leads found for {activeTab}.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
 
-        {/* 🔹 Pagination */}
-        <div className="flex justify-between items-center mt-4 flex-wrap">
-          <div className="flex space-x-2 mb-2 sm:mb-0">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-              className="px-3 py-1 border rounded"
-            >
-              «
-            </button>
-            <span className="px-3 py-1 border rounded bg-blue-600 text-white">
-              {currentPage}
-            </span>
-            <button
-              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-              className="px-3 py-1 border rounded"
-            >
-              »
-            </button>
+                        {expandedRow === lead._id && (
+                          <tr>
+                            <td colSpan="12" className="px-6 py-4 bg-gray-50">
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <div className="bg-white p-4 rounded-lg shadow-sm">
+                                  <h4 className="font-medium text-gray-900 mb-2">Lead Details</h4>
+                                  <dl className="space-y-2">
+                                    <div>
+                                      <dt className="text-sm text-gray-500">Property Type</dt>
+                                      <dd className="text-sm font-medium text-gray-900">{lead.propertyType || "N/A"}</dd>
+                                    </div>
+                                    <div>
+                                      <dt className="text-sm text-gray-500">City</dt>
+                                      <dd className="text-sm font-medium text-gray-900">{lead.city || "N/A"}</dd>
+                                    </div>
+                                    <div>
+                                      <dt className="text-sm text-gray-500">Budget</dt>
+                                      <dd className="text-sm font-medium text-gray-900">{lead.budget || "N/A"}</dd>
+                                    </div>
+                                  </dl>
+                                </div>
+                                
+                                <div className="bg-white p-4 rounded-lg shadow-sm">
+                                  <h4 className="font-medium text-gray-900 mb-2">Contact Info</h4>
+                                  <dl className="space-y-2">
+                                    <div>
+                                      <dt className="text-sm text-gray-500">Mobile</dt>
+                                      <dd className="text-sm font-medium text-gray-900">{lead.mobile || "N/A"}</dd>
+                                    </div>
+                                    <div>
+                                      <dt className="text-sm text-gray-500">Role</dt>
+                                      <dd className="text-sm font-medium text-gray-900">{lead.roleName || "N/A"}</dd>
+                                    </div>
+                                    <div>
+                                      <dt className="text-sm text-gray-500">Created By</dt>
+                                      <dd className="text-sm font-medium text-gray-900">{lead.createdBy || "N/A"}</dd>
+                                    </div>
+                                  </dl>
+                                </div>
+                                
+                                <div className="bg-white p-4 rounded-lg shadow-sm">
+                                  <h4 className="font-medium text-gray-900 mb-2">Actions</h4>
+                                  <div className="flex space-x-2">
+                                    <button className="text-blue-600 hover:text-blue-800 text-sm">Edit Lead ✏️</button>
+                                    <button className="text-green-600 hover:text-green-800 text-sm">View History 📋</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="12" className="px-6 py-12 text-center">
+                        <div className="text-gray-500">
+                          <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.695 0-5.056-1.54-6.337-3.766" />
+                          </svg>
+                          <p className="mt-2 text-lg font-medium text-gray-900">No leads found</p>
+                          <p className="text-gray-500">Try adjusting your filters or search query</p>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            )}
           </div>
-          <select
-            className="border rounded px-2 py-1"
-            value={rowsPerPage}
-            onChange={(e) => {
-              setRowsPerPage(Number(e.target.value));
-              setCurrentPage(1);
-            }}
-          >
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-          </select>
+
+          {/* Pagination */}
+          <div className="bg-gray-50 px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+            <div className="flex-1 flex justify-between sm:hidden">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Previous
+              </button>
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Next
+              </button>
+            </div>
+            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm text-gray-700">
+                  Showing <span className="font-medium">{indexOfFirstRow + 1}</span> to{" "}
+                  <span className="font-medium">
+                    {Math.min(indexOfLastRow, filteredBySearch.length)}
+                  </span>{" "}
+                  of <span className="font-medium">{filteredBySearch.length}</span> results
+                </p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <select
+                  className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:ring-2 focus:ring-blue-500"
+                  value={rowsPerPage}
+                  onChange={(e) => {
+                    setRowsPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                >
+                  <option value={20}>20 per page</option>
+                  <option value={50}>50 per page</option>
+                  <option value={100}>100 per page</option>
+                </select>
+                
+                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  >
+                    <span className="sr-only">Previous</span>
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  
+                  <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                  >
+                    <span className="sr-only">Next</span>
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
         </div>
 
+        {/* Assign Modal */}
         {isAssignModalOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-[#0000002b] bg-opacity-10 z-50">
-            <div className="bg-white rounded-lg shadow-lg w-[600px] p-6 relative">
-              {/* Close button */}
-              <button
-                className="absolute top-3 right-3 text-gray-600 hover:text-black"
-                onClick={() => setIsAssignModalOpen(false)}
-              >
-                ✖
-              </button>
-
-              <h2 className="text-xl font-semibold mb-4">Assign Leads</h2>
-
-              <div className="grid grid-cols-2 gap-4">
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+            <div className="bg-white rounded-lg shadow-xl p-6 m-4 max-w-md w-full">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-medium text-gray-900">Assign Leads</h3>
+                <button
+                  onClick={() => setIsAssignModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-500"
+                >
+                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Assign To User:</label>
-                  <select className="w-full border rounded px-2 py-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Assign To User</label>
+                  <select className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500">
                     <option>Select User</option>
                     <option>Khalid</option>
                     <option>John</option>
                   </select>
                 </div>
-
+                
                 <div>
-                  <label className="block text-sm font-medium mb-1">Lead Status:</label>
-                  <select className="w-full border rounded px-2 py-2">
-                    <option>Select Lead Status</option>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Lead Status</label>
+                  <select className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500">
+                    <option>Select Status</option>
                     <option>Hot</option>
                     <option>Warm</option>
                     <option>Cold</option>
                   </select>
                 </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Remark</label>
+                  <textarea 
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                    rows="3"
+                    placeholder="Add any notes..."
+                  />
+                </div>
+                
+                <div className="flex items-center">
+                  <input type="checkbox" id="isActive" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                  <label htmlFor="isActive" className="ml-2 block text-sm text-gray-900">Set as active</label>
+                </div>
               </div>
-
-              <div className="mt-4">
-                <label className="block text-sm font-medium mb-1">Remark:</label>
-                <textarea className="w-full border rounded px-2 py-2" rows="3" />
-              </div>
-
-              <div className="mt-4 flex items-center">
-                <input type="checkbox" id="isActive" className="mr-2" />
-                <label htmlFor="isActive">isActive</label>
-              </div>
-
-              <div className="mt-6 flex justify-end">
+              
+              <div className="mt-6 flex justify-end space-x-3">
                 <button
-                  className="bg-blue-600 text-white px-4 py-2 rounded"
+                  onClick={() => setIsAssignModalOpen(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
                   onClick={() => {
-                    // ✅ Assign API call यहाँ कर सकते हो
                     console.log("Assigning leads:", selectedLeads);
                     setIsAssignModalOpen(false);
-                    setSelectedLeads([]); // reset
+                    setSelectedLeads([]);
                   }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700"
                 >
                   Assign Leads
                 </button>
@@ -542,7 +610,6 @@ export default function NewLeads() {
             </div>
           </div>
         )}
-
       </div>
     </DashboardLayout>
   );

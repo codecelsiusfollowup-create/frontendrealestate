@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 
-export default function PostPropertyStep1({ onNext, defaultValues = {} }) {
+export default function PostPropertyStep1({  onNext, defaultValues = {} }) {
   const [listingType, setListingType] = useState(defaultValues.listingType || "Sell");
   const [propertyUse, setPropertyUse] = useState(defaultValues.propertyUse || "Residential");
   const [propertyType, setPropertyType] = useState(defaultValues.propertyType || "");
@@ -8,6 +8,7 @@ export default function PostPropertyStep1({ onNext, defaultValues = {} }) {
   const [extraInfo, setExtraInfo] = useState(defaultValues.extraInfo || "");
   const [shopLocation, setShopLocation] = useState(defaultValues.shopLocation || "");
   const [errors, setErrors] = useState({});
+  const [username, setUsername] = useState("");
 
   const residentialOptions = {
     Sell: [
@@ -64,9 +65,16 @@ export default function PostPropertyStep1({ onNext, defaultValues = {} }) {
     onNext(data);
   };
 
+   useEffect(() => {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user?.username) {
+        setUsername(user.username);
+      }
+    }, []);
+
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-2">Welcome back Khalid,</h1>
+      <h1 className="text-2xl font-bold mb-2">Welcome back {username ? `- ${username}` : ""},</h1>
       <p className="text-gray-700 mb-6">Fill out basic details</p>
 
       {/* Listing Type */}
