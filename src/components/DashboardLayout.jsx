@@ -62,8 +62,20 @@ export default function DashboardLayout({ title = "Dashboard", children }) {
       { to: "/dealer", label: "Dashboard", icon: <Home size={20} /> },
       { to: "/dealer/create-staff", label: "Create Staff", icon: <Users size={20} /> },
       { to: "/dealer/manage-staff", label: "Manage Staff", icon: <Users size={20} /> },
+      {
+        label: "Lead",
+        icon: <UserPlus size={20} />,
+        submenu: [
+          { to: "/dealer/staffleadall", label: "All Leads", icon: <Dot size={40} /> },
+          { to: "/dealer/staffleadfilter", label: "Filter Leads", icon: <Dot size={40} /> },
+          { to: "/admin/addlead", label: "Add Basic Leads", icon: <Dot size={40} /> },
+        ],
+      },
     ],
-    staff: [{ to: "/staff", label: "Dashboard", icon: <Home size={20} /> }],
+    staff: [
+      { to: "/staff", label: "Dashboard", icon: <Home size={20} /> }
+
+    ],
   };
 
   const navLinks = links[role] || [];

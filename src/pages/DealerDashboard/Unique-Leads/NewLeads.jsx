@@ -4,7 +4,7 @@ import DashboardLayout from "../../../components/DashboardLayout";
 import { CSVLink } from "react-csv";
 import { ChevronLeft, ChevronRight, Download, RotateCcw, Users, Phone } from "lucide-react";
 
-export default function NewLeads() {
+export default function StaffNewLeads() {
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("All");
@@ -17,6 +17,29 @@ export default function NewLeads() {
   const [editingActionId, setEditingActionId] = useState(null);
   const [selectedLeads, setSelectedLeads] = useState([]);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+ const [staffList, setStaffList] = useState([]);
+
+useEffect(() => {
+    const fetchStaff = async () => {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const dealerId = user?._id || user?.id;
+
+      if (!user || user.role !== "dealer" || !dealerId) {
+        console.error("Dealer ID missing or user not dealer.");
+        return;
+      }
+
+      try {
+        const res = await axios.get(`https://a-new-vercel.vercel.app/api/users/staff/${dealerId}`);
+        setStaffList(res.data);
+      } catch (err) {
+        console.error("Error fetching staff:", err);
+      }
+    };
+
+    fetchStaff();
+  }, []);
+
 
   const handleStatusChange = (leadId, newStatus) => {
     setLeads((prev) =>
@@ -559,7 +582,11 @@ export default function NewLeads() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Assign To User</label>
                   <select className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500">
                     <option>Select User</option>
-            
+                     {staffList.map((user) => (
+                        <option key={user._id}>
+                          {user.username}
+                        </option>
+                      ))}
                   </select>
                 </div>
                 
