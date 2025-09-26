@@ -16,6 +16,8 @@ export default function StaffDashboard() {
   }, [userData, navigate]);
 
   const staffId = userData?._id;
+
+  // ✅ Use FCM hook (foreground + background notifications)
   useFCM(staffId);
 
   if (!userData) return <p>Please login to access the dashboard.</p>;
