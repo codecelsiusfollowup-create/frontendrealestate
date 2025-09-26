@@ -648,7 +648,7 @@ export default function CreateLead() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("https://a-new-vercel.vercel.app/api/leads", formData);
+      const res = await axios.post("https://backend-six-indol-62.vercel.app/api/leads", formData);
       if (res.data.success) {
         alert("✅ Lead created successfully!");
         handleReset();

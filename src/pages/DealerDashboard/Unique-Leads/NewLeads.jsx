@@ -33,7 +33,7 @@ const handleAssignLeads = async () => {
   const payload = { leadIds: selectedLeads, userId: selectedUser, status: leadStatus || "New", remark, isActive };
   try {
     const token = localStorage.getItem("token");
-    const res = await axios.post("https://a-new-vercel.vercel.app/api/leads/assign", payload, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await axios.post("https://backend-six-indol-62.vercel.app/api/leads/assign", payload, { headers: { Authorization: `Bearer ${token}` } });
 
     if (res.data.success) {
       alert("Leads assigned successfully!");
@@ -59,7 +59,7 @@ const handleAssignLeads = async () => {
       }
 
       try {
-        const res = await axios.get(`https://a-new-vercel.vercel.app/api/users/staff/${dealerId}`);
+        const res = await axios.get(`https://backend-six-indol-62.vercel.app/api/users/staff/${dealerId}`);
         setStaffList(res.data);
       } catch (err) {
         console.error("Error fetching staff:", err);
@@ -91,7 +91,7 @@ const handleAssignLeads = async () => {
   useEffect(() => {
     const fetchLeads = async () => {
       try {
-        const res = await axios.get("https://a-new-vercel.vercel.app/api/leads");
+        const res = await axios.get("https://backend-six-indol-62.vercel.app/api/leads");
         if (Array.isArray(res.data)) {
           setLeads(res.data);
         } else if (Array.isArray(res.data.data)) {

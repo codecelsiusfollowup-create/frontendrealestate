@@ -21,7 +21,7 @@ export default function Signup() {
 
   const handleSubmit = async () => {
     try {
-      await axios.post("https://a-new-vercel.vercel.app/api/auth/register", formData);
+      await axios.post("https://backend-six-indol-62.vercel.app/api/auth/register", formData);
       alert("Signup successful! You can now login.");
       navigate("/login");
     } catch (err) {

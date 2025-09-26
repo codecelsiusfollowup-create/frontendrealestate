@@ -15,7 +15,7 @@ const StaffFilterLead = () => {
 
   const fetchLeads = async () => {
     try {
-      const res = await axios.get("https://a-new-vercel.vercel.app/api/leads");
+      const res = await axios.get("https://backend-six-indol-62.vercel.app/api/leads");
       const data = Array.isArray(res.data) ? res.data : res.data.data || [];
       setLeads(data);
       setFilteredLeads(data);

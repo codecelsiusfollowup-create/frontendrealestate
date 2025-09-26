@@ -71,7 +71,7 @@ export default function FilterPanel({ onSearchResults }) {
       keyword: searchKeyword,
     };
 
-    const res = await axios.post("https://a-new-vercel.vercel.app/api/search", payload);
+    const res = await axios.post("https://backend-six-indol-62.vercel.app/api/search", payload);
 
     console.log("Search Result:", res.data);
     const results = res.data?.properties || [];

@@ -20,7 +20,7 @@ export const useFCM = (staffId) => {
 
         if (!token) return console.warn("No FCM token generated");
 
-        await axios.post("https://a-new-vercel.vercel.app/api/notifications/save-token", { staffId, token });
+        await axios.post("https://backend-six-indol-62.vercel.app/api/notifications/save-token", { staffId, token });
         console.log("✅ FCM token saved:", token);
       } catch (err) {
         console.error("FCM token error:", err);

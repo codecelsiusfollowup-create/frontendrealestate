@@ -15,7 +15,7 @@ export default function StaffAssign() {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("Token not found");
 
-        const res = await axios.get("https://a-new-vercel.vercel.app/api/assignlead", {
+        const res = await axios.get("https://backend-six-indol-62.vercel.app/api/assignlead", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
