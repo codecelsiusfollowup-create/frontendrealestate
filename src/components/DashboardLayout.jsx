@@ -1,4 +1,3 @@
-// components/DashboardLayout.jsx
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
@@ -13,12 +12,14 @@ import {
   ChevronDown,
   ChevronUp,
   Dot,
+  ClipboardList,
 } from "lucide-react";
 import Topbar from "./Topbar";
 
 export default function DashboardLayout({ title = "Dashboard", children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [role, setRole] = useState("");
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
   const [openMenus, setOpenMenus] = useState({});
@@ -31,11 +32,33 @@ export default function DashboardLayout({ title = "Dashboard", children }) {
   };
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user) {
-      setRole(user.role);
-    }
-  }, [location]);
+    const checkAuth = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const stored = localStorage.getItem("user");
+        if (!token || !stored) {
+          navigate("/login");
+          return;
+        }
+
+        const user = JSON.parse(stored);
+        if (user?.role) {
+          setRole(user.role.toLowerCase());
+        } else {
+          navigate("/login");
+          return;
+        }
+      } catch (err) {
+        console.error("Error reading user:", err);
+        navigate("/login");
+        return;
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [location, navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -43,170 +66,82 @@ export default function DashboardLayout({ title = "Dashboard", children }) {
     navigate("/login");
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen text-lg font-semibold">
+        Loading Dashboard...
+      </div>
+    );
+  }
+
   const links = {
     admin: [
       { to: "/admin", label: "Dashboard", icon: <Home size={20} /> },
       { to: "/admin/postproperty", label: "Post Property", icon: <Building2 size={20} /> },
       { to: "/admin/property-list", label: "Property List", icon: <List size={20} /> },
-      {
-        label: "Lead",
-        icon: <UserPlus size={20} />,
-        submenu: [
-          { to: "/admin/leadall", label: "All Leads", icon: <Dot size={40} /> },
-          { to: "/admin/leadfilter", label: "Filter Leads", icon: <Dot size={40} /> },
-          { to: "/admin/addlead", label: "Add Basic Leads", icon: <Dot size={40} /> },
-        ],
-      },
     ],
     dealer: [
       { to: "/dealer", label: "Dashboard", icon: <Home size={20} /> },
       { to: "/dealer/create-staff", label: "Create Staff", icon: <Users size={20} /> },
       { to: "/dealer/manage-staff", label: "Manage Staff", icon: <Users size={20} /> },
       {
-        label: "Lead",
+        label: "Lead Management",
         icon: <UserPlus size={20} />,
         submenu: [
-          { to: "/dealer/staffleadall", label: "All Leads", icon: <Dot size={40} /> },
-          { to: "/dealer/staffleadfilter", label: "Filter Leads", icon: <Dot size={40} /> },
-          { to: "/admin/addlead", label: "Add Basic Leads", icon: <Dot size={40} /> },
+          { to: "/dealer/staffleadall", label: "All Leads", icon: <Dot size={24} /> },
+          { to: "/dealer/staffleadfilter", label: "Filter Leads", icon: <Dot size={24} /> },
+          { to: "/dealer/addlead", label: "Add Basic Leads", icon: <Dot size={24} /> },
         ],
       },
     ],
     staff: [
-      { to: "/staff", label: "Dashboard", icon: <Home size={20} /> }
-
+      { to: "/staff", label: "Dashboard", icon: <Home size={20} /> },
+      { to: "/staff/assignlead", label: "Assigned Leads", icon: <ClipboardList size={20} /> },
+      { to: "/staff/completed", label: "Completed Leads", icon: <ClipboardList size={20} /> },
+      { to: "/staff/rejected", label: "Rejected Leads", icon: <ClipboardList size={20} /> },
     ],
   };
 
   const navLinks = links[role] || [];
-
-  // ✅ Helper function for active link
   const isActive = (path) => location.pathname === path;
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Mobile Sidebar */}
-      <div
-        className={`fixed z-40 inset-y-0 left-0 w-64 bg-blue-900 text-white p-4 transform ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform duration-200 ease-in-out md:hidden`}
-      >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold">CRM Dashboard</h2>
-          <button onClick={() => setSidebarOpen(false)}>
-            <X />
-          </button>
-        </div>
-        <nav>
-          {navLinks.map((item) => {
-            if (item.submenu) {
-              return (
-                <div key={item.label}>
-                  {/* Parent toggle button */}
-                  <button
-                    onClick={() => toggleSubmenu(item.label)}
-                    className="flex items-center justify-between w-full pt-2 pb-2 gap-2 hover:text-gray-300 cursor-pointer"
-                  >
-                    <span className="flex items-center gap-2">
-                      {item.icon} {item.label}
-                    </span>
-                    {openMenus[item.label] ? (
-                      <ChevronUp size={16} />
-                    ) : (
-                      <ChevronDown size={16} />
-                    )}
-                  </button>
-
-                  {/* Submenu */}
-                  {openMenus[item.label] && (
-                    <div className="ml-6">
-                      {item.submenu.map((sub) => (
-                        <Link
-                          key={sub.to}
-                          to={sub.to}
-                          // ✅ sirf sidebar band hoga, submenu ka state same rahega
-                          onClick={() => setSidebarOpen(false)}
-                          className={`block flex items-center rounded px-2 py-1 ${
-                            isActive(sub.to)
-                              ? "bg-[#0a5beb6b] text-white"
-                              : "hover:text-gray-300"
-                          }`}
-                        >
-                          {sub.icon} {sub.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            }
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-2 pt-2 pb-2 rounded px-2 ${
-                  isActive(item.to)
-                    ? "bg-[#0a5beb6b] text-white"
-                    : "hover:text-gray-300"
-                }`}
-              >
-                {item.icon} {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-2 text-red-300 hover:text-white mt-6 cursor-pointer"
-        >
-          <LogOut size={20} /> Logout
-        </button>
-      </div>
-
-      {/* Desktop Sidebar */}
+      {/* Sidebar */}
       <div className="hidden md:flex flex-col w-64 bg-blue-900 text-white p-4">
         <h2 className="text-2xl font-bold mb-6">CRM Dashboard</h2>
         <nav className="flex-1">
-          {navLinks.map((item) => {
-            if (item.submenu) {
-              return (
-                <div key={item.label}>
-                  <button
-                    onClick={() => toggleSubmenu(item.label)}
-                    className="flex items-center justify-between w-full pt-2 pb-2 gap-2 hover:text-gray-300 cursor-pointer border-b border-gray-400"
-                  >
-                    <span className="flex items-center gap-2">
-                      {item.icon} {item.label}
-                    </span>
-                    {openMenus[item.label] ? (
-                      <ChevronUp size={16} />
-                    ) : (
-                      <ChevronDown size={16} />
-                    )}
-                  </button>
-
-                  {openMenus[item.label] && (
-                    <div>
-                      {item.submenu.map((sub) => (
-                        <Link
-                          key={sub.to}
-                          to={sub.to}
-                          className={`block border-b border-gray-400 flex items-center rounded px-2 py-1 ${
-                            isActive(sub.to)
-                              ? "bg-[#0a5beb6b] text-white"
-                              : "hover:text-gray-300"
-                          }`}
-                        >
-                          {sub.icon} {sub.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            }
-            return (
+          {navLinks.map((item) =>
+            item.submenu ? (
+              <div key={item.label}>
+                <button
+                  onClick={() => toggleSubmenu(item.label)}
+                  className="flex items-center justify-between w-full pt-2 pb-2 gap-2 hover:text-gray-300 border-b border-gray-400"
+                >
+                  <span className="flex items-center gap-2">
+                    {item.icon} {item.label}
+                  </span>
+                  {openMenus[item.label] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                </button>
+                {openMenus[item.label] && (
+                  <div>
+                    {item.submenu.map((sub) => (
+                      <Link
+                        key={sub.to}
+                        to={sub.to}
+                        className={`block border-b border-gray-400 flex items-center rounded px-2 py-1 ${
+                          isActive(sub.to)
+                            ? "bg-[#0a5beb6b] text-white"
+                            : "hover:text-gray-300"
+                        }`}
+                      >
+                        {sub.icon} {sub.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
               <Link
                 key={item.to}
                 to={item.to}
@@ -218,12 +153,12 @@ export default function DashboardLayout({ title = "Dashboard", children }) {
               >
                 {item.icon} {item.label}
               </Link>
-            );
-          })}
+            )
+          )}
         </nav>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 text-red-300 hover:text-white cursor-pointer"
+          className="flex items-center gap-2 text-red-300 hover:text-white"
         >
           <LogOut size={20} /> Logout
         </button>
@@ -231,23 +166,9 @@ export default function DashboardLayout({ title = "Dashboard", children }) {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-y-auto">
-        {/* Mobile Topbar */}
-        <header className="md:hidden bg-white shadow px-4 py-3 flex justify-between items-center">
-          <button onClick={() => setSidebarOpen(true)}>
-            <Menu size={24} />
-          </button>
-          <h1 className="text-lg font-bold">{title}</h1>
-          <button onClick={handleLogout}>
-            <LogOut size={24} color="red" />
-          </button>
-        </header>
-
-        {/* Desktop Topbar */}
         <div className="hidden md:block">
           <Topbar title={title} />
         </div>
-
-        {/* Page Content */}
         <main className="p-4 bg-gray-100 flex-1">{children}</main>
       </div>
     </div>

@@ -43,7 +43,7 @@ export default function PostPropertyPage() {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:5000/api/properties/submit", {
+      const res = await fetch("https://a-new-vercel.vercel.app/api/properties/submit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -86,15 +86,15 @@ const typologyOptionsByPropertyType = {
     { value: "7 BHK", label: "7 BHK" },
   ],
   plot: [
-     { value: "120 - 160 Sq.Yd", label: "120 - 160 Sq.Yd" },
-     { value: "166 Sq.Yd", label: "166 Sq.Yd" },
-     { value: "180 Sq yard/sq meter", label: "180 Sq yard/sq meter" },
-     { value: "250 Sq yard/sq meter", label: "250 Sq yard/sq meter" },
-     { value: "2BHK", label: "2BHK" },
-     { value: "4BHK", label: "4BHK" },
-     { value: "500 Sq yard/sq meter", label: "500 Sq yard/sq meter" },
-     { value: "5BHK", label: "5BHK" },
-     { value: "All Sizes Available", label: "4BHK" },
+    { value: "120 - 160 Sq.Yd", label: "120 - 160 Sq.Yd" },
+    { value: "166 Sq.Yd", label: "166 Sq.Yd" },
+    { value: "180 Sq yard/sq meter", label: "180 Sq yard/sq meter" },
+    { value: "250 Sq yard/sq meter", label: "250 Sq yard/sq meter" },
+    { value: "2BHK", label: "2BHK" },
+    { value: "4BHK", label: "4BHK" },
+    { value: "500 Sq yard/sq meter", label: "500 Sq yard/sq meter" },
+    { value: "5BHK", label: "5BHK" },
+    { value: "All Sizes Available", label: "4BHK" },
   ],
   "independent floors": [
     { value: "1 BHK", label: "1 BHK" },
@@ -103,7 +103,7 @@ const typologyOptionsByPropertyType = {
     { value: "4 BHK", label: "4 BHK" },
     { value: "5 BHK", label: "5 BHK" },
   ],
-  "low rise floors":[
+  "low rise floors": [
     { value: "1 BHK", label: "1 BHK" },
     { value: "1.5 BHK", label: "1.5 BHK" },
     { value: "2 BHK", label: "2 BHK" },
@@ -128,7 +128,7 @@ const typologyOptionsByPropertyType = {
     { value: "Retail", label: "Retail" },
     { value: "Showroom", label: "Showroom" },
   ],
-   office: [
+  office: [
     { value: "Cabin", label: "Cabin" },
     { value: "Hall", label: "Hall" },
   ],
@@ -141,111 +141,111 @@ const dropdownOptions = {
     { value: "commercial", label: "Commercial" },
     { value: "other", label: "Other" },
   ],
- budget : [
-  { value: "Price on Request", label: "Price on Request" },
-  { value: "1L", label: "1L" },
-  { value: "2L", label: "2L" },
-  { value: "3L", label: "3L" },
-  { value: "4L", label: "4L" },
-  { value: "5L", label: "5L" },
-  { value: "6L", label: "6L" },
-  { value: "7L", label: "7L" },
-  { value: "8L", label: "8L" },
-  { value: "9L", label: "9L" },
-  { value: "10L", label: "10L" },
-  { value: "11L", label: "11L" },
-  { value: "12L", label: "12L" },
-  { value: "13L", label: "13L" },
-  { value: "14L", label: "14L" },
-  { value: "15L", label: "15L" },
-  { value: "16L", label: "16L" },
-  { value: "17L", label: "17L" },
-  { value: "18L", label: "18L" },
-  { value: "19L", label: "19L" },
-  { value: "20L", label: "20L" },
-  { value: "21L", label: "21L" },
-  { value: "22L", label: "22L" },
-  { value: "23L", label: "23L" },
-  { value: "24L", label: "24L" },
-  { value: "25L", label: "25L" },
-  { value: "26L", label: "26L" },
-  { value: "27L", label: "27L" },
-  { value: "28L", label: "28L" },
-  { value: "29L", label: "29L" },
-  { value: "30L", label: "30L" },
-  { value: "31L", label: "31L" },
-  { value: "32L", label: "32L" },
-  { value: "33L", label: "33L" },
-  { value: "34L", label: "34L" },
-  { value: "35L", label: "35L" },
-  { value: "36L", label: "36L" },
-  { value: "37L", label: "37L" },
-  { value: "38L", label: "38L" },
-  { value: "39L", label: "39L" },
-  { value: "40L", label: "40L" },
-  { value: "41L", label: "41L" },
-  { value: "42L", label: "42L" },
-  { value: "43L", label: "43L" },
-  { value: "44L", label: "44L" },
-  { value: "45L", label: "45L" },
-  { value: "46L", label: "46L" },
-  { value: "47L", label: "47L" },
-  { value: "48L", label: "48L" },
-  { value: "49L", label: "49L" },
-  { value: "50L", label: "50L" },
+  budget: [
+    { value: "Price on Request", label: "Price on Request" },
+    { value: "1L", label: "1L" },
+    { value: "2L", label: "2L" },
+    { value: "3L", label: "3L" },
+    { value: "4L", label: "4L" },
+    { value: "5L", label: "5L" },
+    { value: "6L", label: "6L" },
+    { value: "7L", label: "7L" },
+    { value: "8L", label: "8L" },
+    { value: "9L", label: "9L" },
+    { value: "10L", label: "10L" },
+    { value: "11L", label: "11L" },
+    { value: "12L", label: "12L" },
+    { value: "13L", label: "13L" },
+    { value: "14L", label: "14L" },
+    { value: "15L", label: "15L" },
+    { value: "16L", label: "16L" },
+    { value: "17L", label: "17L" },
+    { value: "18L", label: "18L" },
+    { value: "19L", label: "19L" },
+    { value: "20L", label: "20L" },
+    { value: "21L", label: "21L" },
+    { value: "22L", label: "22L" },
+    { value: "23L", label: "23L" },
+    { value: "24L", label: "24L" },
+    { value: "25L", label: "25L" },
+    { value: "26L", label: "26L" },
+    { value: "27L", label: "27L" },
+    { value: "28L", label: "28L" },
+    { value: "29L", label: "29L" },
+    { value: "30L", label: "30L" },
+    { value: "31L", label: "31L" },
+    { value: "32L", label: "32L" },
+    { value: "33L", label: "33L" },
+    { value: "34L", label: "34L" },
+    { value: "35L", label: "35L" },
+    { value: "36L", label: "36L" },
+    { value: "37L", label: "37L" },
+    { value: "38L", label: "38L" },
+    { value: "39L", label: "39L" },
+    { value: "40L", label: "40L" },
+    { value: "41L", label: "41L" },
+    { value: "42L", label: "42L" },
+    { value: "43L", label: "43L" },
+    { value: "44L", label: "44L" },
+    { value: "45L", label: "45L" },
+    { value: "46L", label: "46L" },
+    { value: "47L", label: "47L" },
+    { value: "48L", label: "48L" },
+    { value: "49L", label: "49L" },
+    { value: "50L", label: "50L" },
 
-  // ✅ Ab Crore start
-  { value: "1Cr", label: "1Cr" },
-  { value: "2Cr", label: "2Cr" },
-  { value: "3Cr", label: "3Cr" },
-  { value: "4Cr", label: "4Cr" },
-  { value: "5Cr", label: "5Cr" },
-  { value: "6Cr", label: "6Cr" },
-  { value: "7Cr", label: "7Cr" },
-  { value: "8Cr", label: "8Cr" },
-  { value: "9Cr", label: "9Cr" },
-  { value: "10Cr", label: "10Cr" },
-  { value: "11Cr", label: "11Cr" },
-  { value: "12Cr", label: "12Cr" },
-  { value: "13Cr", label: "13Cr" },
-  { value: "14Cr", label: "14Cr" },
-  { value: "15Cr", label: "15Cr" },
-  { value: "16Cr", label: "16Cr" },
-  { value: "17Cr", label: "17Cr" },
-  { value: "18Cr", label: "18Cr" },
-  { value: "19Cr", label: "19Cr" },
-  { value: "20Cr", label: "20Cr" },
-  { value: "21Cr", label: "21Cr" },
-  { value: "22Cr", label: "22Cr" },
-  { value: "23Cr", label: "23Cr" },
-  { value: "24Cr", label: "24Cr" },
-  { value: "25Cr", label: "25Cr" },
-  { value: "26Cr", label: "26Cr" },
-  { value: "27Cr", label: "27Cr" },
-  { value: "28Cr", label: "28Cr" },
-  { value: "29Cr", label: "29Cr" },
-  { value: "30Cr", label: "30Cr" },
-  { value: "35Cr", label: "35Cr" },
-  { value: "40Cr", label: "40Cr" },
-  { value: "45Cr", label: "45Cr" },
-  { value: "50Cr", label: "50Cr" },
-  { value: "55Cr", label: "55Cr" },
-  { value: "60Cr", label: "60Cr" },
-  { value: "65Cr", label: "65Cr" },
-  { value: "70Cr", label: "70Cr" },
-  { value: "75Cr", label: "75Cr" },
-  { value: "80Cr", label: "80Cr" },
-  { value: "85Cr", label: "85Cr" },
-  { value: "90Cr", label: "90Cr" },
-  { value: "95Cr", label: "95Cr" },
-  { value: "100Cr", label: "100Cr" },
-  { value: "110Cr", label: "110Cr" },
-  { value: "120Cr", label: "120Cr" },
-  { value: "130Cr", label: "130Cr" },
-  { value: "140Cr", label: "140Cr" },
-  { value: "150Cr", label: "150Cr" },
-  { value: "160Cr", label: "160Cr" },
-],
+    // ✅ Ab Crore start
+    { value: "1Cr", label: "1Cr" },
+    { value: "2Cr", label: "2Cr" },
+    { value: "3Cr", label: "3Cr" },
+    { value: "4Cr", label: "4Cr" },
+    { value: "5Cr", label: "5Cr" },
+    { value: "6Cr", label: "6Cr" },
+    { value: "7Cr", label: "7Cr" },
+    { value: "8Cr", label: "8Cr" },
+    { value: "9Cr", label: "9Cr" },
+    { value: "10Cr", label: "10Cr" },
+    { value: "11Cr", label: "11Cr" },
+    { value: "12Cr", label: "12Cr" },
+    { value: "13Cr", label: "13Cr" },
+    { value: "14Cr", label: "14Cr" },
+    { value: "15Cr", label: "15Cr" },
+    { value: "16Cr", label: "16Cr" },
+    { value: "17Cr", label: "17Cr" },
+    { value: "18Cr", label: "18Cr" },
+    { value: "19Cr", label: "19Cr" },
+    { value: "20Cr", label: "20Cr" },
+    { value: "21Cr", label: "21Cr" },
+    { value: "22Cr", label: "22Cr" },
+    { value: "23Cr", label: "23Cr" },
+    { value: "24Cr", label: "24Cr" },
+    { value: "25Cr", label: "25Cr" },
+    { value: "26Cr", label: "26Cr" },
+    { value: "27Cr", label: "27Cr" },
+    { value: "28Cr", label: "28Cr" },
+    { value: "29Cr", label: "29Cr" },
+    { value: "30Cr", label: "30Cr" },
+    { value: "35Cr", label: "35Cr" },
+    { value: "40Cr", label: "40Cr" },
+    { value: "45Cr", label: "45Cr" },
+    { value: "50Cr", label: "50Cr" },
+    { value: "55Cr", label: "55Cr" },
+    { value: "60Cr", label: "60Cr" },
+    { value: "65Cr", label: "65Cr" },
+    { value: "70Cr", label: "70Cr" },
+    { value: "75Cr", label: "75Cr" },
+    { value: "80Cr", label: "80Cr" },
+    { value: "85Cr", label: "85Cr" },
+    { value: "90Cr", label: "90Cr" },
+    { value: "95Cr", label: "95Cr" },
+    { value: "100Cr", label: "100Cr" },
+    { value: "110Cr", label: "110Cr" },
+    { value: "120Cr", label: "120Cr" },
+    { value: "130Cr", label: "130Cr" },
+    { value: "140Cr", label: "140Cr" },
+    { value: "150Cr", label: "150Cr" },
+    { value: "160Cr", label: "160Cr" },
+  ],
   possessionType: [
     { value: "Ready", label: "Ready" },
     { value: "Under Construction", label: "Under Construction" },
@@ -253,7 +253,22 @@ const dropdownOptions = {
   possessionTime: [{ value: "2025", label: "2025" }],
 };
 
-export default function CreateLead() {
+// Lead Status Options
+const leadStatusOptions = [
+  { value: "Fresh Leads", label: "Fresh Leads" },
+  { value: "Follow Up Leads", label: "Follow Up Leads" },
+  { value: "Deal Won Leads", label: "Deal Won Leads" },
+  { value: "Not Interested", label: "Not Interested" },
+  { value: "Pending Follow Up", label: "Pending Follow Up" },
+  { value: "Junk", label: "Junk" },
+  { value: "SV Planned", label: "SV Planned" },
+  { value: "SV Done", label: "SV Done" },
+  { value: "Interested", label: "Interested" },
+  { value: "Revisit", label: "Revisit" },
+];
+
+export default function CreateLeadDealer() {
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -273,6 +288,7 @@ export default function CreateLead() {
     remark: "",
     amenities: "",
     isActive: true,
+    leadStatus: "Fresh Leads"
   });
 
   const handleInputChange = (e) => {
@@ -323,11 +339,15 @@ export default function CreateLead() {
       remark: "",
       amenities: "",
       isActive: true,
+        leadStatus: "Fresh Leads",
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return; // agar already submitting hai to kuch mat karo
+    setSubmitting(true);
+
     try {
       const res = await axios.post("https://a-new-vercel.vercel.app/api/leads", formData);
       if (res.data.success) {
@@ -339,6 +359,8 @@ export default function CreateLead() {
     } catch (error) {
       console.error("Error:", error);
       alert("❌ Something went wrong!");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -450,6 +472,20 @@ export default function CreateLead() {
               </div>
             ))}
 
+             {/* Lead Status */}
+            <div>
+              <label className="block text-sm font-medium mb-1">Lead Status</label>
+              <Select
+                name="leadStatus"
+                options={leadStatusOptions}
+                value={leadStatusOptions.find((opt) => opt.value === formData.leadStatus)}
+                onChange={handleSelectChange}
+                placeholder="Select Lead Status"
+                isClearable
+                isSearchable
+              />
+            </div>
+
             <div className="md:col-span-3">
               <label className="block text-sm font-medium mb-1">Remark</label>
               <textarea
@@ -496,10 +532,13 @@ export default function CreateLead() {
             </button>
             <button
               type="submit"
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              disabled={submitting}
+              className={`px-4 py-2 rounded text-white ${submitting ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+                }`}
             >
-              Create Lead
+              {submitting ? "Creating..." : "Create Lead"}
             </button>
+
           </div>
         </form>
       </div>

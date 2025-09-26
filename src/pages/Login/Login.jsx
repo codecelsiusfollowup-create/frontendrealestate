@@ -6,26 +6,23 @@ import { Eye, EyeOff } from "lucide-react";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // 👈 Show/hide state
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post("https://a-new-vercel.vercel.app/api/auth/login", {
-        email,
-        password,
-      });
+      const res = await axios.post("https://a-new-vercel.vercel.app/api/auth/login", { email, password });
 
+      // ✅ Save token & user (same key for all)
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      const role = res.data.user.role;
-
+      const role = res.data.user.role.toLowerCase();
       if (role === "admin") navigate("/admin");
       else if (role === "dealer") navigate("/dealer");
       else if (role === "staff") navigate("/staff");
     } catch (err) {
-      alert("Login failed");
+      alert(err.response?.data?.msg || "Login failed");
     }
   };
 
@@ -43,7 +40,7 @@ export default function Login() {
 
         <div className="relative mb-4">
           <input
-            type={showPassword ? "text" : "password"} // 👈 dynamic input type
+            type={showPassword ? "text" : "password"}
             className="w-full border p-2 pr-10"
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
@@ -52,25 +49,16 @@ export default function Login() {
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-2 top-2 cursor-pointer text-sm text-blue-600"
           >
-             {showPassword ? (
-              <EyeOff size={20} />
-            ) : (
-              <Eye size={20} />
-            )}
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </span>
         </div>
 
         <button
-          className="bg-blue-600 text-white w-full py-2 rounded cursor-pointer"
+          className="bg-blue-600 text-white w-full py-2 rounded"
           onClick={handleLogin}
         >
           Login
         </button>
-
-        <p className="text-center mt-4">
-          Don’t have an account?{" "}
-          <a href="/" className="text-blue-600 font-semibold">Signup</a>
-        </p>
       </div>
     </div>
   );

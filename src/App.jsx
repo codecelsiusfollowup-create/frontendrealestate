@@ -16,6 +16,8 @@ import NewLeads from "./pages/AdminDashboard/Unique-Leads/NewLeads";
 import FilterLead from "./pages/AdminDashboard/Unique-Leads/FilterLead";
 import StaffNewLeads from "./pages/DealerDashboard/Unique-Leads/NewLeads";
 import StaffFilterLead from "./pages/DealerDashboard/Unique-Leads/FilterLead";
+import StaffAssign from "./pages/StaffDashboard/AssignLead/MyLead";
+import CreateLeadDealer from "./pages/DealerDashboard/Unique-Leads/CreateLead";
 
 
 function App() {
@@ -38,10 +40,10 @@ function App() {
         <Route path="/dealer/manage-staff" element={<ManageStaff/>} />
         <Route path="/dealer/staffleadall" element={<StaffNewLeads/>}/>
         <Route path="/dealer/staffleadfilter" element={<StaffFilterLead/>}/>
-
+        <Route path="/dealer/addlead" element={<CreateLeadDealer/>} />
 
         <Route path="/staff" element={<ProtectedRoute><StaffDashboard /></ProtectedRoute>} />
-       
+        <Route path="/staff/assignlead" element={<StaffAssign/>}/>
        
       </Routes>
     </BrowserRouter>

@@ -17,9 +17,38 @@ export default function StaffNewLeads() {
   const [editingActionId, setEditingActionId] = useState(null);
   const [selectedLeads, setSelectedLeads] = useState([]);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
- const [staffList, setStaffList] = useState([]);
+  const [staffList, setStaffList] = useState([]);
 
-useEffect(() => {
+  const [selectedUser, setSelectedUser] = useState("");
+  const [leadStatus, setLeadStatus] = useState("");
+  const [remark, setRemark] = useState("");
+  const [isActive, setIsActive] = useState(false);
+
+const handleAssignLeads = async () => {
+  if (!selectedLeads.length || !selectedUser) {
+    alert("Select at least one lead and a staff member");
+    return;
+  }
+
+  const payload = { leadIds: selectedLeads, userId: selectedUser, status: leadStatus || "New", remark, isActive };
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.post("https://a-new-vercel.vercel.app/api/leads/assign", payload, { headers: { Authorization: `Bearer ${token}` } });
+
+    if (res.data.success) {
+      alert("Leads assigned successfully!");
+      setSelectedLeads([]);
+      setSelectedUser("");
+    } else {
+      alert(`Assignment failed: ${res.data.message}`);
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Error assigning leads");
+  }
+};
+
+  useEffect(() => {
     const fetchStaff = async () => {
       const user = JSON.parse(localStorage.getItem("user"));
       const dealerId = user?._id || user?.id;
@@ -94,10 +123,16 @@ useEffect(() => {
     "Revisit",
   ];
 
+  // 🔹 Filter by Tab
   const filteredByTab =
     activeTab === "All"
       ? leads
-      : leads.filter((lead) => lead.leadStatus === activeTab);
+      : leads.filter(
+        (lead) =>
+          lead.leadStatus?.toLowerCase().trim() ===
+          activeTab.toLowerCase().trim()
+      );
+
 
   const filteredBySearch = filteredByTab.filter((lead) =>
     Object.values(lead).some(
@@ -186,7 +221,7 @@ useEffect(() => {
               >
                 <ChevronLeft className="h-5 w-5 text-gray-600" />
               </button>
-              
+
               <div
                 ref={scrollRef}
                 className="flex space-x-1 overflow-x-auto mx-12 py-3 px-2 scrollbar-hide"
@@ -198,17 +233,16 @@ useEffect(() => {
                       setActiveTab(tab);
                       setCurrentPage(1);
                     }}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${
-                      activeTab === tab
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${activeTab === tab
                         ? "bg-blue-100 text-blue-700 shadow-sm"
                         : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                    }`}
+                      }`}
                   >
                     {tab}
                   </button>
                 ))}
               </div>
-              
+
               <button
                 onClick={scrollRight}
                 className="absolute right-0 top-0 bottom-0 z-10 bg-gradient-to-l from-white to-transparent pr-2 pl-4 flex items-center"
@@ -243,11 +277,10 @@ useEffect(() => {
                 <button
                   onClick={() => setIsAssignModalOpen(true)}
                   disabled={selectedLeads.length === 0}
-                  className={`inline-flex items-center px-4 py-2 rounded-lg transition-colors shadow-sm ${
-                    selectedLeads.length === 0
+                  className={`inline-flex items-center px-4 py-2 rounded-lg transition-colors shadow-sm ${selectedLeads.length === 0
                       ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                       : "bg-blue-600 text-white hover:bg-blue-700"
-                  }`}
+                    }`}
                 >
                   <Users className="w-4 h-4 mr-2" />
                   Assign Lead ({selectedLeads.length})
@@ -360,7 +393,7 @@ useEffect(() => {
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {lead.leadSource}
                           </td>
-                         
+
                           <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
                             {lead.remark}
                           </td>
@@ -384,13 +417,12 @@ useEffect(() => {
                             ) : (
                               <button
                                 onClick={() => setEditingStatusId(lead._id)}
-                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-colors ${
-                                  lead.status === "Hot"
+                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-colors ${lead.status === "Hot"
                                     ? "bg-red-100 text-red-800 hover:bg-red-200"
                                     : lead.status === "Warm"
-                                    ? "bg-orange-100 text-orange-800 hover:bg-orange-200"
-                                    : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                                }`}
+                                      ? "bg-orange-100 text-orange-800 hover:bg-orange-200"
+                                      : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                                  }`}
                               >
                                 {lead.status || "Cold"}
                               </button>
@@ -412,11 +444,10 @@ useEffect(() => {
                             ) : (
                               <button
                                 onClick={() => setEditingActionId(lead._id)}
-                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-colors ${
-                                  lead.action
+                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-colors ${lead.action
                                     ? "bg-blue-100 text-blue-800 hover:bg-blue-200"
                                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                                }`}
+                                  }`}
                               >
                                 {lead.action || "Select"}
                               </button>
@@ -445,7 +476,7 @@ useEffect(() => {
                                     </div>
                                   </dl>
                                 </div>
-                                
+
                                 <div className="bg-white p-4 rounded-lg shadow-sm">
                                   <h4 className="font-medium text-gray-900 mb-2">Contact Info</h4>
                                   <dl className="space-y-2">
@@ -463,7 +494,7 @@ useEffect(() => {
                                     </div>
                                   </dl>
                                 </div>
-                                
+
                                 <div className="bg-white p-4 rounded-lg shadow-sm">
                                   <h4 className="font-medium text-gray-900 mb-2">Actions</h4>
                                   <div className="flex space-x-2">
@@ -534,7 +565,7 @@ useEffect(() => {
                   <option value={50}>50 per page</option>
                   <option value={100}>100 per page</option>
                 </select>
-                
+
                 <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
                   <button
                     onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
@@ -543,11 +574,11 @@ useEffect(() => {
                     <span className="sr-only">Previous</span>
                     <ChevronLeft className="h-5 w-5" />
                   </button>
-                  
+
                   <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
                     Page {currentPage} of {totalPages}
                   </span>
-                  
+
                   <button
                     onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
                     className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
@@ -571,50 +602,92 @@ useEffect(() => {
                   onClick={() => setIsAssignModalOpen(false)}
                   className="text-gray-400 hover:text-gray-500"
                 >
-                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
-              
+
+              {/* Assign To User */}
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Assign To User</label>
-                  <select className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500">
-                    <option>Select User</option>
-                     {staffList.map((user) => (
-                        <option key={user._id}>
-                          {user.username}
-                        </option>
-                      ))}
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Lead Status</label>
-                  <select className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500">
-                    <option>Select Status</option>
-                    <option>Hot</option>
-                    <option>Warm</option>
-                    <option>Cold</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Remark</label>
-                  <textarea 
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Assign To User
+                  </label>
+                  <select
+                    value={selectedUser}
+                    onChange={(e) => setSelectedUser(e.target.value)}
                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
-                    rows="3"
+                  >
+                    <option value="">Select User</option>
+                    {staffList.map((user) => (
+                      <option key={user._id} value={user._id}>
+                        {user.username}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Lead Status */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Lead Status
+                  </label>
+                  <select
+                    value={leadStatus}
+                    onChange={(e) => setLeadStatus(e.target.value)}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Select Status</option>
+                    <option value="Hot">Hot</option>
+                    <option value="Warm">Warm</option>
+                    <option value="Cold">Cold</option>
+                  </select>
+                </div>
+
+                {/* Remark */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Remark
+                  </label>
+                  <textarea
+                    value={remark}
+                    onChange={(e) => setRemark(e.target.value)}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                    rows={3}
                     placeholder="Add any notes..."
                   />
                 </div>
-                
+
+                {/* Active checkbox */}
                 <div className="flex items-center">
-                  <input type="checkbox" id="isActive" className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-                  <label htmlFor="isActive" className="ml-2 block text-sm text-gray-900">Set as active</label>
+                  <input
+                    type="checkbox"
+                    id="isActive"
+                    checked={isActive}
+                    onChange={(e) => setIsActive(e.target.checked)}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label
+                    htmlFor="isActive"
+                    className="ml-2 block text-sm text-gray-900"
+                  >
+                    Set as active
+                  </label>
                 </div>
               </div>
-              
+
+              {/* Buttons */}
               <div className="mt-6 flex justify-end space-x-3">
                 <button
                   onClick={() => setIsAssignModalOpen(false)}
@@ -623,11 +696,7 @@ useEffect(() => {
                   Cancel
                 </button>
                 <button
-                  onClick={() => {
-                    console.log("Assigning leads:", selectedLeads);
-                    setIsAssignModalOpen(false);
-                    setSelectedLeads([]);
-                  }}
+                  onClick={handleAssignLeads}
                   className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700"
                 >
                   Assign Leads
