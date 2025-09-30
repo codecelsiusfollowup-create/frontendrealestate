@@ -1,6 +1,7 @@
 // frontend/src/pages/staff/StaffAssign.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useRef} from "react";
 import axios from "axios";
+import { io } from "socket.io-client";
 import DashboardLayout from "../../../components/DashboardLayout";
 import { 
   FiPhone, 
@@ -23,32 +24,66 @@ export default function StaffAssign() {
   const [error, setError] = useState("");
   const [filter, setFilter] = useState("all");
   const [sortBy, setSortBy] = useState("createdAt");
+   const socketRef = useRef(null);
+  const pollingRef = useRef(null);
 
-  useEffect(() => {
-    const fetchMyLeads = async () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+ // ---------- Initial Fetch ----------
+  const fetchMyLeads = async () => {
+    try {
       setLoading(true);
-      setError("");
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) throw new Error("Token not found");
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Token not found");
 
-        const res = await axios.get(
-          "https://backend-six-indol-62.vercel.app/api/assignlead",
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+      const res = await axios.get(
+        "https://backend-six-indol-62.vercel.app/api/assignlead",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-        if (res.data.success) setMyLeads(res.data.data || []);
-        else setError(res.data.message || "Failed to fetch leads");
-      } catch (err) {
-        console.error("Error fetching leads:", err.response?.data || err.message);
-        setError(err.response?.data?.message || err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+      if (res.data.success) setMyLeads(res.data.data || []);
+      else setError(res.data.message || "Failed to fetch leads");
+    } catch (err) {
+      console.error("Error fetching leads:", err.response?.data || err.message);
+      setError(err.response?.data?.message || err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // ---------- Socket.io ----------
+  useEffect(() => {
+    if (!user?._id) return;
+
+    const socket = io("https://backend-six-indol-62.vercel.app");
+    socketRef.current = socket;
+
+    // Join user-specific room
+    socket.emit("join-room", user._id);
+
+    // Listen for new leads
+    socket.on("new-leads", (newLeads) => {
+      console.log("🔔 New leads received via socket:", newLeads);
+      setMyLeads((prev) => [...newLeads, ...prev]);
+    });
+
+    // Cleanup
+    return () => socket.disconnect();
+  }, [user?._id]);
+
+// ---------- Single fallback fetch ----------  
+useEffect(() => {
+  // initial fetch
+  fetchMyLeads();
+
+  // fallback fetch ek baar hi, 5s baad agar socket se kuch na aaye
+  const fallbackTimeout = setTimeout(() => {
     fetchMyLeads();
-  }, []);
+  }, 5000); // optional, adjust delay
+
+  return () => clearTimeout(fallbackTimeout);
+}, []);
+
 
   const getLeadScore = (lead) => {
     let score = 0;

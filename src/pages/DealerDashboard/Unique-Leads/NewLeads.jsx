@@ -3,6 +3,7 @@ import axios from "axios";
 import DashboardLayout from "../../../components/DashboardLayout";
 import { CSVLink } from "react-csv";
 import { ChevronLeft, ChevronRight, Download, RotateCcw, Users, Phone } from "lucide-react";
+import { io } from "socket.io-client";
 
 export default function StaffNewLeads() {
   const [leads, setLeads] = useState([]);
@@ -23,30 +24,58 @@ export default function StaffNewLeads() {
   const [leadStatus, setLeadStatus] = useState("");
   const [remark, setRemark] = useState("");
   const [isActive, setIsActive] = useState(false);
+  const socketRef = useRef(null);
 
-const handleAssignLeads = async () => {
-  if (!selectedLeads.length || !selectedUser) {
-    alert("Select at least one lead and a staff member");
-    return;
-  }
+  const user = JSON.parse(localStorage.getItem("user"));
+  // ------------------ SOCKET.IO ------------------
+useEffect(() => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user?._id) return;
 
-  const payload = { leadIds: selectedLeads, userId: selectedUser, status: leadStatus || "New", remark, isActive };
-  try {
-    const token = localStorage.getItem("token");
-    const res = await axios.post("https://backend-six-indol-62.vercel.app/api/leads/assign", payload, { headers: { Authorization: `Bearer ${token}` } });
+  // connect socket
+  socketRef.current = io("https://backend-six-indol-62.vercel.app");
 
-    if (res.data.success) {
-      alert("Leads assigned successfully!");
-      setSelectedLeads([]);
-      setSelectedUser("");
-    } else {
-      alert(`Assignment failed: ${res.data.message}`);
+  // join room
+  socketRef.current.emit("join-room", user._id);
+
+  // listen for new leads
+  socketRef.current.on("new-leads", (newLeads) => {
+    console.log("🔔 New leads received via socket:", newLeads);
+    setLeads((prev) => [...newLeads, ...prev]);
+  });
+
+  return () => {
+    socketRef.current.disconnect();
+  };
+}, []);
+
+
+  const handleAssignLeads = async () => {
+    if (!selectedLeads.length || !selectedUser) return alert("Select at least one lead and a staff member");
+
+    const payload = { leadIds: selectedLeads, userId: selectedUser, status: leadStatus || "New", remark, isActive };
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post("https://backend-six-indol-62.vercel.app/api/leads/assign", payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.data.success) {
+        alert("Leads assigned successfully!");
+        setSelectedLeads([]);
+        setSelectedUser("");
+        setRemark("");
+        setLeadStatus("");
+        setIsAssignModalOpen(false);
+        // ✅ Optional: already handled via socket
+      } else {
+        alert(`Assignment failed: ${res.data.message}`);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error assigning leads");
     }
-  } catch (err) {
-    console.error(err);
-    alert("Error assigning leads");
-  }
-};
+  };
 
   useEffect(() => {
     const fetchStaff = async () => {

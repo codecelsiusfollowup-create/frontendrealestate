@@ -66,13 +66,7 @@ export default function DashboardLayout({ title = "Dashboard", children }) {
     navigate("/login");
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen text-lg font-semibold">
-        Loading Dashboard...
-      </div>
-    );
-  }
+  
 
   const links = {
     admin: [
@@ -128,7 +122,7 @@ export default function DashboardLayout({ title = "Dashboard", children }) {
         </div>
       </div>
 
-      <div className="flex pt-14 md:pt-0"> {/* Add padding for mobile header */}
+      <div className="flex pt-14 md:pt-0 h-screen"> {/* Add padding for mobile header */}
         {/* Overlay for mobile */}
         {sidebarOpen && (
           <div 
