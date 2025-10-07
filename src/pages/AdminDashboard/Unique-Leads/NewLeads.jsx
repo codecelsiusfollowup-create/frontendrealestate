@@ -39,7 +39,7 @@ export default function NewLeads() {
   useEffect(() => {
     const fetchLeads = async () => {
       try {
-        const res = await axios.get("https://backend-six-indol-62.vercel.app/api/leads");
+        const res = await axios.get("https://backend-six-plum-52.vercel.app/api/leads");
         if (Array.isArray(res.data)) {
           setLeads(res.data);
         } else if (Array.isArray(res.data.data)) {

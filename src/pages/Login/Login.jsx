@@ -11,7 +11,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post("https://backend-six-indol-62.vercel.app/api/auth/login", { email, password });
+      const res = await axios.post("https://backend-six-plum-52.vercel.app/api/auth/login", { email, password });
 
       // ✅ Save token & user (same key for all)
       localStorage.setItem("token", res.data.token);

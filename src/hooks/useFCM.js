@@ -38,7 +38,7 @@ export const useFCM = (staffId) => {
         }
 
         // 4️⃣ Save token to backend
-        await axios.post("https://backend-six-indol-62.vercel.app/api/notifications/save-token", {
+        await axios.post("https://backend-six-plum-52.vercel.app/api/notifications/save-token", {
           staffId,
           token,
         });

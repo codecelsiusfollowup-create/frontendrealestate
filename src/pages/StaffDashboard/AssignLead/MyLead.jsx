@@ -36,7 +36,7 @@ export default function StaffAssign() {
       if (!token) throw new Error("Token not found");
 
       const res = await axios.get(
-        "https://backend-six-indol-62.vercel.app/api/assignlead",
+        "https://backend-six-plum-52.vercel.app/api/assignlead",
         {
           headers: { Authorization: `Bearer ${token}` },
         }

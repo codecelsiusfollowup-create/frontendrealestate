@@ -16,7 +16,7 @@ export default function ManageStaff() {
       }
 
       try {
-        const res = await axios.get(`https://backend-six-indol-62.vercel.app/api/users/staff/${dealerId}`);
+        const res = await axios.get(`https://backend-six-plum-52.vercel.app/api/users/staff/${dealerId}`);
         setStaffList(res.data);
       } catch (err) {
         console.error("Error fetching staff:", err);
@@ -29,7 +29,7 @@ export default function ManageStaff() {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this staff?")) return;
     try {
-      await axios.delete(`https://backend-six-indol-62.vercel.app/api/users/staff/${id}`);
+      await axios.delete(`https://backend-six-plum-52.vercel.app/api/users/staff/${id}`);
       setStaffList(prev => prev.filter(user => user._id !== id));
     } catch (err) {
       console.error("Delete error:", err);

@@ -17,7 +17,7 @@ export default function PropertyDetailPage() {
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const res = await axios.get(`https://backend-six-indol-62.vercel.app/api/property/${id}`);
+        const res = await axios.get(`https://backend-six-plum-52.vercel.app/api/property/${id}`);
         setProperty(res.data.property || res.data);
         console.log(res.data)
       } catch (err) {

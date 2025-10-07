@@ -19,7 +19,7 @@ export default function ManageDealers() {
       const token = localStorage.getItem("token");
       try {
         const res = await axios.get(
-          "https://backend-six-indol-62.vercel.app/api/users/dealers",
+          "https://backend-six-plum-52.vercel.app/api/users/dealers",
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setDealers(res.data);
@@ -43,7 +43,7 @@ export default function ManageDealers() {
 
     const token = localStorage.getItem("token");
     try {
-      await axios.delete(`https://backend-six-indol-62.vercel.app/api/users/${id}`, {
+      await axios.delete(`https://backend-six-plum-52.vercel.app/api/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setDealers((prev) => prev.filter((dealer) => dealer._id !== id));

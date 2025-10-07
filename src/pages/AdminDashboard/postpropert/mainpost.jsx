@@ -43,7 +43,7 @@ export default function PostPropertyPage() {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch("https://backend-six-indol-62.vercel.app/api/properties/submit", {
+      const res = await fetch("https://backend-six-plum-52.vercel.app/api/properties/submit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
