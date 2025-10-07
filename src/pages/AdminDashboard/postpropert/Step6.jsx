@@ -284,6 +284,7 @@ export default function Step6({ onBack, onNext }) {
       <div className="flex gap-3 mb-1">
         <input
           type="number"
+          min="0"
           value={roadWidth}
           onChange={(e) => setRoadWidth(e.target.value)}
           placeholder="Enter the width"

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import Select from "react-select";
+import { cityOptions } from "../../../data/cities";
 
 const LOCAL_KEY = "postPropertyStep7";
 
@@ -17,6 +19,7 @@ export default function Step7({ onBack, onSubmit }) {
   const [landline1, setLandline1] = useState("");
   const [landline2, setLandline2] = useState("");
   const [whatsappOptIn, setWhatsappOptIn] = useState(false);
+  const [selectedCity, setSelectedCity] = useState(null);
 
   const [errors, setErrors] = useState({});
   const [isDataLoaded, setIsDataLoaded] = useState(false);
@@ -84,6 +87,11 @@ export default function Step7({ onBack, onSubmit }) {
     }
   };
 
+   const handleCityChange = (city) => {
+    setSelectedCity(city);
+    setSelectedArea(null); // reset area
+    setFormData({ ...formData, city: city?.value, area: null });
+  };
   return (
     <div className="p-6">
       <h2 className="text-xl font-semibold mb-6">Before you post... Let buyers know who you are</h2>
@@ -175,18 +183,17 @@ export default function Step7({ onBack, onSubmit }) {
         />
 
         <div className="col-span-2">
-          <select
-            className={`border px-3 py-2 rounded w-full ${errors.city ? "border-red-500" : ""}`}
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-          >
-            <option value="">Select City</option>
-            <option value="Godhra">Godhra</option>
-            <option value="Ahmedabad">Ahmedabad</option>
-            <option value="Vadodara">Vadodara</option>
-            <option value="Surat">Surat</option>
-          </select>
-          {errors.city && <p className="text-red-500 text-sm">{errors.city}</p>}
+         <div>
+        <label className="block text-sm font-medium mb-1">City</label>
+        <Select
+          options={cityOptions}
+          value={selectedCity}
+          onChange={handleCityChange}
+          placeholder="Select City"
+          isClearable
+        />
+      </div>
+          
         </div>
       </div>
 

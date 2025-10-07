@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import Select from "react-select";
 import DashboardLayout from "../../../components/DashboardLayout";
 import axios from "axios";
+import { cityOptions } from "../../../data/cities";
+import { areaMap } from "../../../data/areas";
 
 // Options
 const leadSourceOptions = [
@@ -22,15 +24,6 @@ const leadSourceOptions = [
   { value: "whatsapp", label: "WhatsApp" },
 ];
 
-const cityOptions = [
-  { value: "Pune", label: "Pune" },
-  { value: "Mumbai", label: "Mumbai" },
-];
-
-const areaOptions = [
-  { value: "Baner", label: "Baner" },
-  { value: "Wakad", label: "Wakad" },
-];
 
 const propertyTypeOptions = {
   residential: [
@@ -268,6 +261,8 @@ const leadStatusOptions = [
 ];
 
 export default function CreateLeadDealer() {
+  const [selectedCity, setSelectedCity] = useState(null);
+  const [selectedArea, setSelectedArea] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -364,6 +359,17 @@ export default function CreateLeadDealer() {
     }
   };
 
+
+    const handleCityChange = (city) => {
+    setSelectedCity(city);
+    setSelectedArea(null); // reset area
+    setFormData({ ...formData, city: city?.value, area: null });
+  };
+
+  const handleAreaChange = (area) => {
+    setSelectedArea(area);
+    setFormData({ ...formData, area: area?.value });
+  };
   return (
     <DashboardLayout>
       <div className="p-6 bg-white rounded-lg shadow-md">
@@ -395,29 +401,31 @@ export default function CreateLeadDealer() {
               </div>
             ))}
 
-            {[
-              { name: "leadSource", options: leadSourceOptions },
-              { name: "city", options: cityOptions },
-              { name: "area", options: areaOptions },
-              { name: "property", options: dropdownOptions.property },
-            ].map(({ name, options }) => (
-              <div key={name}>
-                <label className="block text-sm font-medium mb-1">
-                  {name
-                    .replace(/([A-Z])/g, " $1")
-                    .replace(/^./, (str) => str.toUpperCase())}
-                </label>
-                <Select
-                  name={name}
-                  options={options}
-                  value={options.find((opt) => opt.value === formData[name])}
-                  onChange={handleSelectChange}
-                  placeholder={`Select ${name}`}
-                  isClearable
-                  isSearchable
-                />
-              </div>
-            ))}
+             
+      <div>
+        <label className="block text-sm font-medium mb-1">City</label>
+        <Select
+          options={cityOptions}
+          value={selectedCity}
+          onChange={handleCityChange}
+          placeholder="Select City"
+          isClearable
+        />
+      </div>
+
+      {/* Area */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Area</label>
+        <Select
+          options={selectedCity ? areaMap[selectedCity.value] : []}
+          value={selectedArea}
+          onChange={handleAreaChange}
+          placeholder="Select Area"
+          isClearable
+          isDisabled={!selectedCity}
+        />
+      </div>
+   
 
             {/* Property Type */}
             <div>

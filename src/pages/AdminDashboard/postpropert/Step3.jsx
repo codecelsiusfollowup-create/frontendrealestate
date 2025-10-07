@@ -117,6 +117,14 @@ export default function Step3({ onNext, onBack, defaultValues = {} }) {
 
   };
 
+  // Generate floor options dynamically based on totalFloors
+  const floorOptions = [
+    "Basement",
+    "Lower Ground",
+    "Ground",
+    ...Array.from({ length: Number(totalFloors) || 0 }, (_, i) => i + 1)
+  ];
+
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-6">Tell us about your property</h2>
@@ -260,6 +268,7 @@ export default function Step3({ onNext, onBack, defaultValues = {} }) {
               onChange={(e) =>
                 setAreaDetails({ ...areaDetails, carpet: e.target.value })
               }
+              min="0"
               placeholder="Enter value"
               className="flex-1 border rounded px-2 py-1 outline-none"
             />
@@ -290,6 +299,7 @@ export default function Step3({ onNext, onBack, defaultValues = {} }) {
                 onChange={(e) =>
                   setAreaDetails({ ...areaDetails, builtUp: e.target.value })
                 }
+                min="0"
                 placeholder="Enter value"
                 className="flex-1 border rounded px-2 py-1 outline-none"
               />
@@ -328,6 +338,7 @@ export default function Step3({ onNext, onBack, defaultValues = {} }) {
                 onChange={(e) =>
                   setAreaDetails({ ...areaDetails, superBuiltUp: e.target.value })
                 }
+                min="0"
                 placeholder="Enter value"
                 className="flex-1 border rounded px-2 py-1 outline-none"
               />
@@ -494,29 +505,29 @@ export default function Step3({ onNext, onBack, defaultValues = {} }) {
         <label className="block font-semibold mb-1">Floor Details</label>
         <p className="text-sm text-gray-500 mb-2">Total no of floors and your floor details</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Total Floors */}
-          <input
-            type="number"
-            placeholder="Total Floors"
-            value={totalFloors}
-            onChange={(e) => setTotalFloors(e.target.value)}
-            className="border px-4 py-2 rounded w-full"
-          />
+        {/* Total Floors Input */}
+      <input
+        type="number"
+        placeholder="Total Floors"
+        value={totalFloors}
+        onChange={(e) => setTotalFloors(e.target.value)}
+        min="0"
+        className="border px-4 py-2 rounded w-full"
+      />
 
-          {/* Property on Floor Dropdown */}
-          <select
-            value={propertyOnFloor}
-            onChange={(e) => setPropertyOnFloor(e.target.value)}
-            className="border px-4 py-2 rounded w-full"
-          >
-            <option value="">Property on Floor</option>
-            <option value="Basement">Basement</option>
-            <option value="Lower Ground">Lower Ground</option>
-            <option value="Ground">Ground</option>
-            {[...Array(20)].map((_, i) => (
-              <option key={i + 1} value={i + 1}>{i + 1}</option>
-            ))}
-          </select>
+      {/* Property on Floor Dropdown */}
+      <select
+        value={propertyOnFloor}
+        onChange={(e) => setPropertyOnFloor(e.target.value)}
+        className="border px-4 py-2 rounded w-full"
+      >
+        <option value="">Select Property on Floor</option>
+        {floorOptions.map((floor, index) => (
+          <option key={index} value={floor}>
+            {floor}
+          </option>
+        ))}
+      </select>
         </div>
       </div>
 

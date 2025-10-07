@@ -215,6 +215,7 @@ export default function Step5({ onBack, onNext }) {
           <label className="text-sm font-medium">₹ Expected Price</label>
           <input
             type="number"
+            min="0"
             value={price}
             onChange={(e) => handlePriceChange(e.target.value)}
             className="w-full border px-3 py-2 rounded"
@@ -233,6 +234,7 @@ export default function Step5({ onBack, onNext }) {
           <label className="text-sm font-medium">₹ Price per sq.ft.</label>
           <input
             type="number"
+            min="0"
             value={pricePerSqFt}
             onChange={(e) => handlePricePerSqFtChange(e.target.value)}
             className="w-full border px-3 py-2 rounded"
@@ -280,6 +282,7 @@ export default function Step5({ onBack, onNext }) {
             <div className="flex gap-2">
               <input
                 type="number"
+                min="0"
                 value={maintenance}
                 onChange={(e) => setMaintenance(e.target.value)}
                 placeholder="Amount"
@@ -300,6 +303,7 @@ export default function Step5({ onBack, onNext }) {
             <label className="text-sm block mb-1">Expected rental</label>
             <input
               type="number"
+              min="0"
               value={expectedRental}
               onChange={(e) => setExpectedRental(e.target.value)}
               className="w-full border px-3 py-2 rounded"
@@ -311,6 +315,7 @@ export default function Step5({ onBack, onNext }) {
             <label className="text-sm block mb-1">Booking Amount</label>
             <input
               type="number"
+              min="0"
               value={bookingAmount}
               onChange={(e) => setBookingAmount(e.target.value)}
               className="w-full border px-3 py-2 rounded"
@@ -322,6 +327,7 @@ export default function Step5({ onBack, onNext }) {
             <label className="text-sm block mb-1">Annual dues payable</label>
             <input
               type="number"
+              min="0"
               value={annualDues}
               onChange={(e) => setAnnualDues(e.target.value)}
               className="w-full border px-3 py-2 rounded"
@@ -369,6 +375,7 @@ export default function Step5({ onBack, onNext }) {
 
             <input
               type="number"
+              min="0"
               value={brokerageValue}
               onChange={(e) => setBrokerageValue(e.target.value)}
               placeholder="Enter brokerage here"
