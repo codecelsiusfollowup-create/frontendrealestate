@@ -3,7 +3,7 @@ import axios from "axios";
 import DashboardLayout from "../../../components/DashboardLayout";
 import { CSVLink } from "react-csv";
 import { ChevronLeft, ChevronRight, Download, RotateCcw, Users, Phone } from "lucide-react";
-import { io } from "socket.io-client";
+
 
 export default function StaffNewLeads() {
   const [leads, setLeads] = useState([]);
@@ -24,30 +24,10 @@ export default function StaffNewLeads() {
   const [leadStatus, setLeadStatus] = useState("");
   const [remark, setRemark] = useState("");
   const [isActive, setIsActive] = useState(false);
-  const socketRef = useRef(null);
+ 
 
   const user = JSON.parse(localStorage.getItem("user"));
-  // ------------------ SOCKET.IO ------------------
-useEffect(() => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (!user?._id) return;
-
-  // connect socket
-  socketRef.current = io("https://backend-six-indol-62.vercel.app");
-
-  // join room
-  socketRef.current.emit("join-room", user._id);
-
-  // listen for new leads
-  socketRef.current.on("new-leads", (newLeads) => {
-    console.log("🔔 New leads received via socket:", newLeads);
-    setLeads((prev) => [...newLeads, ...prev]);
-  });
-
-  return () => {
-    socketRef.current.disconnect();
-  };
-}, []);
+ 
 
 
   const handleAssignLeads = async () => {
