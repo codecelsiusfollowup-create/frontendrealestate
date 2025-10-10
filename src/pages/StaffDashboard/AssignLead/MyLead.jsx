@@ -1,5 +1,5 @@
 // frontend/src/pages/staff/StaffAssign.jsx
-import React, { useEffect, useState ,useRef} from "react";
+import React, { useEffect, useState, useRef, useCallback, memo } from "react";
 import axios from "axios";
 import DashboardLayout from "../../../components/DashboardLayout";
 import { 
@@ -14,21 +14,235 @@ import {
   FiClock,
   FiTrendingUp,
   FiMessageSquare,
-  FiStar
+  FiStar,
+  FiCheckCircle,
+  FiAlertCircle,
+  FiPlus,
+  FiEdit3,
+  FiTrash2,
+  FiX
 } from "react-icons/fi";
+
+// Separate modal components to prevent re-rendering
+const FollowUpModal = memo(({ 
+  isOpen, 
+  onClose, 
+  followUpData, 
+  onSubmit, 
+  onInputChange 
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose}>
+      <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4" onClick={(e) => e.stopPropagation()}>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">Schedule Follow-up</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <FiX className="w-6 h-6" />
+          </button>
+        </div>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Contact Method</label>
+            <select
+              value={followUpData.type}
+              onChange={(e) => onInputChange('type', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="call">Phone Call</option>
+              <option value="email">Email</option>
+              <option value="sms">SMS</option>
+              <option value="whatsapp">WhatsApp</option>
+            </select>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <input
+                type="date"
+                value={followUpData.date}
+                onChange={(e) => onInputChange('date', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
+              <input
+                type="time"
+                value={followUpData.time}
+                onChange={(e) => onInputChange('time', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+            <textarea
+              value={followUpData.notes}
+              onChange={(e) => onInputChange('notes', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              rows="3"
+              placeholder="Add notes about this follow-up..."
+            />
+          </div>
+          <div className="flex gap-3 pt-4">
+            <button
+              onClick={onSubmit}
+              className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Schedule Follow-up
+            </button>
+            <button
+              onClick={onClose}
+              className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+const VisitModal = memo(({ 
+  isOpen, 
+  onClose, 
+  visitData, 
+  onSubmit, 
+  onInputChange 
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose}>
+      <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4" onClick={(e) => e.stopPropagation()}>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">Schedule Visit</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <FiX className="w-6 h-6" />
+          </button>
+        </div>
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+              <input
+                type="date"
+                value={visitData.date}
+                onChange={(e) => onInputChange('date', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
+              <input
+                type="time"
+                value={visitData.time}
+                onChange={(e) => onInputChange('time', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Duration (minutes)</label>
+            <input
+              type="number"
+              value={visitData.duration}
+              onChange={(e) => onInputChange('duration', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              placeholder="30"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+            <input
+              type="text"
+              value={visitData.location}
+              onChange={(e) => onInputChange('location', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              placeholder="Visit location..."
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+            <textarea
+              value={visitData.notes}
+              onChange={(e) => onInputChange('notes', e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              rows="3"
+              placeholder="Add notes about this visit..."
+            />
+          </div>
+          <div className="flex gap-3 pt-4">
+            <button
+              onClick={onSubmit}
+              className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors"
+            >
+              Schedule Visit
+            </button>
+            <button
+              onClick={onClose}
+              className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+});
 
 export default function StaffAssign() {
   const [myLeads, setMyLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState("uncontacted");
   const [sortBy, setSortBy] = useState("createdAt");
 
-  const pollingRef = useRef(null);
+  const [followUpModal, setFollowUpModal] = useState(false);
+  const [visitModal, setVisitModal] = useState(false);
+  const [selectedLead, setSelectedLead] = useState(null);
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  const [followUpData, setFollowUpData] = useState({
+    type: 'call',
+    date: new Date().toISOString().split('T')[0],
+    time: new Date().toTimeString().slice(0, 5),
+    notes: '',
+    status: 'scheduled',
+    reminder: true
+  });
 
- // ---------- Fetch My Leads ----------
+  const [visitData, setVisitData] = useState({
+    date: new Date().toISOString().split('T')[0],
+    time: new Date().toTimeString().slice(0, 5),
+    duration: '30',
+    location: '',
+    notes: '',
+    status: 'scheduled',
+    outcome: ''
+  });
+
+  const API_BASE_URL = "http://localhost:5000/api";
+
+  // Optimized input handlers using useCallback
+  const handleFollowUpInputChange = useCallback((field, value) => {
+    setFollowUpData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
+
+  const handleVisitInputChange = useCallback((field, value) => {
+    setVisitData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
+
+  // Fetch My Leads
   const fetchMyLeads = async () => {
     try {
       setLoading(true);
@@ -36,7 +250,7 @@ export default function StaffAssign() {
       if (!token) throw new Error("Token not found");
 
       const res = await axios.get(
-        "https://backend-six-plum-52.vercel.app/api/assignlead",
+        `${API_BASE_URL}/assignlead`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -55,18 +269,117 @@ export default function StaffAssign() {
     }
   };
 
-  // ---------- Initial Fetch + Polling ----------
+  // Add Follow-up
+  const addFollowUp = async () => {
+    if (!selectedLead) return alert("Select a lead first!");
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post(
+        `${API_BASE_URL}/leads/${selectedLead._id}/followup`,
+        followUpData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.data.success) {
+        fetchMyLeads();
+        setFollowUpModal(false);
+        resetFollowUpForm();
+      }
+    } catch (err) {
+      console.error("Error adding follow-up:", err.response?.data || err.message);
+      setError("Failed to add follow-up");
+    }
+  };
+
+  // Add Visit
+  const addVisit = async () => {
+    if (!selectedLead) return alert("Select a lead first!");
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post(
+        `${API_BASE_URL}/leads/${selectedLead._id}/visit`,
+        visitData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.data.success) {
+        fetchMyLeads();
+        setVisitModal(false);
+        resetVisitForm();
+      }
+    } catch (err) {
+      console.error("Error adding visit:", err.response?.data || err.message);
+      setError("Failed to add visit");
+    }
+  };
+
+  // Reset forms
+  const resetFollowUpForm = () => {
+    setFollowUpData({
+      type: 'call',
+      date: new Date().toISOString().split('T')[0],
+      time: new Date().toTimeString().slice(0, 5),
+      notes: '',
+      status: 'scheduled',
+      reminder: true
+    });
+  };
+
+  const resetVisitForm = () => {
+    setVisitData({
+      date: new Date().toISOString().split('T')[0],
+      time: new Date().toTimeString().slice(0, 5),
+      duration: '30',
+      location: '',
+      notes: '',
+      status: 'scheduled',
+      outcome: ''
+    });
+  };
+
+  // Get Upcoming Activities
+  const getUpcomingActivities = (lead) => {
+    const now = new Date();
+    const activities = [];
+    
+    if (lead.followUps) {
+      lead.followUps.forEach(followUp => {
+        const followUpDate = new Date(followUp.date + 'T' + followUp.time);
+        if (followUpDate >= now && followUp.status === 'scheduled') {
+          activities.push({
+            type: 'follow-up',
+            data: followUp,
+            date: followUpDate
+          });
+        }
+      });
+    }
+    
+    if (lead.visits) {
+      lead.visits.forEach(visit => {
+        const visitDate = new Date(visit.date + 'T' + visit.time);
+        if (visitDate >= now && visit.status === 'scheduled') {
+          activities.push({
+            type: 'visit',
+            data: visit,
+            date: visitDate
+          });
+        }
+      });
+    }
+    
+    return activities.sort((a, b) => a.date - b.date);
+  };
+
+  // Check if lead has any activity
+  const hasAnyActivity = (lead) => {
+    const hasFollowUps = lead.followUps && lead.followUps.length > 0;
+    const hasVisits = lead.visits && lead.visits.length > 0;
+    return hasFollowUps || hasVisits;
+  };
+
+  // Initial Fetch
   useEffect(() => {
     fetchMyLeads();
-
-    // ✅ Optional polling every 30 seconds (you can remove if not needed)
-    pollingRef.current = setInterval(() => {
-      fetchMyLeads();
-    }, 30000); // 30 seconds
-
-    return () => clearInterval(pollingRef.current);
   }, []);
-
 
   const getLeadScore = (lead) => {
     let score = 0;
@@ -75,7 +388,11 @@ export default function StaffAssign() {
     if (lead.phone && lead.email) score += 15;
     if (lead.projectName && lead.projectName !== "N/A") score += 20;
     if (lead.remark && lead.remark !== "N/A") score += 20;
-    return score;
+    
+    if (lead.followUps && lead.followUps.length > 0) score += 10;
+    if (lead.visits && lead.visits.length > 0) score += 15;
+    
+    return Math.min(score, 100);
   };
 
   const getLeadStatus = (lead) => {
@@ -83,6 +400,10 @@ export default function StaffAssign() {
       (new Date() - new Date(lead.createdAt)) / (1000 * 60 * 60 * 24)
     );
     
+    const activities = getUpcomingActivities(lead);
+    const recentActivity = activities.length > 0;
+    
+    if (recentActivity) return "active";
     if (daysSinceCreated <= 1) return "new";
     if (daysSinceCreated <= 7) return "warm";
     if (daysSinceCreated <= 30) return "nurture";
@@ -91,24 +412,36 @@ export default function StaffAssign() {
 
   const filteredAndSortedLeads = myLeads
     .filter(lead => {
+      const leadHasActivity = hasAnyActivity(lead);
+      
+      if (filter === "uncontacted") return !leadHasActivity;
       if (filter === "all") return true;
-      if (filter === "active") return lead.isActive;
+      if (filter === "active") return getLeadStatus(lead) === "active";
       if (filter === "new") return getLeadStatus(lead) === "new";
       if (filter === "hot") return getLeadScore(lead) >= 70;
+      if (filter === "followup") return getUpcomingActivities(lead).length > 0;
       return true;
     })
     .sort((a, b) => {
       if (sortBy === "createdAt") return new Date(b.createdAt) - new Date(a.createdAt);
       if (sortBy === "score") return getLeadScore(b) - getLeadScore(a);
       if (sortBy === "name") return a.fullName.localeCompare(b.fullName);
+      if (sortBy === "nextActivity") {
+        const aActivities = getUpcomingActivities(a);
+        const bActivities = getUpcomingActivities(b);
+        if (aActivities.length === 0) return 1;
+        if (bActivities.length === 0) return -1;
+        return aActivities[0].date - bActivities[0].date;
+      }
       return 0;
     });
 
   const getStatusColor = (status) => {
     switch (status) {
+      case "active": return "bg-blue-100 text-blue-800";
       case "new": return "bg-green-100 text-green-800";
       case "warm": return "bg-yellow-100 text-yellow-800";
-      case "nurture": return "bg-blue-100 text-blue-800";
+      case "nurture": return "bg-purple-100 text-purple-800";
       case "cold": return "bg-gray-100 text-gray-800";
       default: return "bg-gray-100 text-gray-800";
     }
@@ -126,10 +459,12 @@ export default function StaffAssign() {
         {/* Header Section */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            My Property Leads
+            {filter === "uncontacted" ? "Fresh Leads - Uncontacted" : "My Assigned Leads"}
           </h2>
           <p className="text-gray-600">
-            Manage your real estate leads and track property inquiries
+            {filter === "uncontacted" 
+              ? "Manage newly assigned leads that haven't been contacted yet"
+              : "Manage your assigned leads and track their progress"}
           </p>
         </div>
 
@@ -138,8 +473,10 @@ export default function StaffAssign() {
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Leads</p>
-                <p className="text-2xl font-bold text-gray-900">{myLeads.length}</p>
+                <p className="text-sm font-medium text-gray-600">Total Fresh Leads</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {myLeads.filter(lead => !hasAnyActivity(lead)).length}
+                </p>
               </div>
               <div className="p-3 bg-blue-100 rounded-lg">
                 <FiUser className="w-6 h-6 text-blue-600" />
@@ -152,7 +489,7 @@ export default function StaffAssign() {
               <div>
                 <p className="text-sm font-medium text-gray-600">New Leads</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {myLeads.filter(lead => getLeadStatus(lead) === "new").length}
+                  {myLeads.filter(lead => !hasAnyActivity(lead) && getLeadStatus(lead) === "new").length}
                 </p>
               </div>
               <div className="p-3 bg-green-100 rounded-lg">
@@ -164,9 +501,9 @@ export default function StaffAssign() {
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Hot Leads</p>
+                <p className="text-sm font-medium text-gray-600">Hot Fresh Leads</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {myLeads.filter(lead => getLeadScore(lead) >= 70).length}
+                  {myLeads.filter(lead => !hasAnyActivity(lead) && getLeadScore(lead) >= 70).length}
                 </p>
               </div>
               <div className="p-3 bg-orange-100 rounded-lg">
@@ -178,9 +515,9 @@ export default function StaffAssign() {
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Active Leads</p>
+                <p className="text-sm font-medium text-gray-600">Contacted Leads</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {myLeads.filter(lead => lead.isActive).length}
+                  {myLeads.filter(lead => hasAnyActivity(lead)).length}
                 </p>
               </div>
               <div className="p-3 bg-purple-100 rounded-lg">
@@ -202,10 +539,11 @@ export default function StaffAssign() {
                 onChange={(e) => setFilter(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="all">All Leads</option>
+                <option value="uncontacted">Uncontacted Leads</option>
+                <option value="all">All Assigned Leads</option>
                 <option value="new">New Leads</option>
                 <option value="hot">Hot Leads (High Score)</option>
-                <option value="active">Active Leads</option>
+                <option value="followup">Upcoming Follow-ups</option>
               </select>
             </div>
             <div className="flex-1">
@@ -220,6 +558,7 @@ export default function StaffAssign() {
                 <option value="createdAt">Newest First</option>
                 <option value="score">Lead Score</option>
                 <option value="name">Name A-Z</option>
+                <option value="nextActivity">Next Activity</option>
               </select>
             </div>
           </div>
@@ -249,8 +588,21 @@ export default function StaffAssign() {
           </div>
         )}
 
-        {/* Empty State */}
-        {!loading && !error && filteredAndSortedLeads.length === 0 && (
+        {/* Empty State for Uncontacted Leads */}
+        {!loading && !error && filteredAndSortedLeads.length === 0 && filter === "uncontacted" && (
+          <div className="text-center py-12">
+            <div className="mx-auto w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-4">
+              <FiCheckCircle className="w-12 h-12 text-green-400" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Great job!</h3>
+            <p className="text-gray-500">
+              All assigned leads have been contacted. Switch to "All Assigned Leads" to view your complete lead list.
+            </p>
+          </div>
+        )}
+
+        {/* Empty State for Other Filters */}
+        {!loading && !error && filteredAndSortedLeads.length === 0 && filter !== "uncontacted" && (
           <div className="text-center py-12">
             <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
               <FiHome className="w-12 h-12 text-gray-400" />
@@ -276,6 +628,16 @@ export default function StaffAssign() {
                   key={lead._id}
                   className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200 overflow-hidden"
                 >
+                  {/* Priority Badge for Fresh Leads */}
+                  {!hasAnyActivity(lead) && (
+                    <div className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white text-sm font-medium">
+                      <div className="flex items-center gap-2">
+                        <FiStar className="w-4 h-4" />
+                        Fresh Lead - Contact Soon!
+                      </div>
+                    </div>
+                  )}
+
                   {/* Card Header */}
                   <div className="p-6 pb-4">
                     <div className="flex items-start justify-between mb-3">
@@ -292,11 +654,6 @@ export default function StaffAssign() {
                             {leadScore}%
                           </span>
                         </div>
-                      </div>
-                      <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        lead.isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600"
-                      }`}>
-                        {lead.isActive ? "Active" : "Inactive"}
                       </div>
                     </div>
 
@@ -346,6 +703,65 @@ export default function StaffAssign() {
                     )}
                   </div>
 
+                  {/* Quick Action for Fresh Leads */}
+                  {!hasAnyActivity(lead) && (
+                    <div className="px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-100">
+                      <h4 className="text-sm font-semibold text-gray-900 mb-3">Quick Actions</h4>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => {
+                            setSelectedLead(lead);
+                            setFollowUpData({...followUpData, type: 'call'});
+                            setFollowUpModal(true);
+                          }}
+                          className="flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                          <FiPhone className="w-4 h-4" />
+                          Follow Up
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedLead(lead);
+                            setVisitData({...visitData, location: lead.projectName || lead.city || ''});
+                            setVisitModal(true);
+                          }}
+                          className="flex items-center justify-center gap-2 px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                          <FiHome className="w-4 h-4" />
+                          Schedule Visit
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Action Buttons for Contacted Leads */}
+                  {hasAnyActivity(lead) && (
+                    <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            setSelectedLead(lead);
+                            setFollowUpModal(true);
+                          }}
+                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                          <FiPhone className="w-4 h-4" />
+                          Add Follow-up
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedLead(lead);
+                            setVisitModal(true);
+                          }}
+                          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                          <FiHome className="w-4 h-4" />
+                          Add Visit
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Additional Details */}
                   {(lead.remark && lead.remark !== "N/A") && (
                     <div className="px-6 py-3">
@@ -372,6 +788,22 @@ export default function StaffAssign() {
             })}
           </div>
         )}
+
+        {/* Modals - Rendered outside the main component flow */}
+        <FollowUpModal 
+          isOpen={followUpModal}
+          onClose={() => setFollowUpModal(false)}
+          followUpData={followUpData}
+          onSubmit={addFollowUp}
+          onInputChange={handleFollowUpInputChange}
+        />
+        <VisitModal 
+          isOpen={visitModal}
+          onClose={() => setVisitModal(false)}
+          visitData={visitData}
+          onSubmit={addVisit}
+          onInputChange={handleVisitInputChange}
+        />
       </div>
     </DashboardLayout>
   );

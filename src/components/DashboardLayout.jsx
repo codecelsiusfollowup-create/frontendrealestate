@@ -87,12 +87,13 @@ export default function DashboardLayout({ title = "Dashboard", children }) {
           { to: "/dealer/addlead", label: "Add Basic Leads", icon: <Dot size={24} /> },
         ],
       },
+      { to: "/dealer/leadstatus", label: "Lead Status", icon: <Users size={20} /> },
     ],
     staff: [
       { to: "/staff", label: "Dashboard", icon: <Home size={20} /> },
       { to: "/staff/assignlead", label: "Assigned Leads", icon: <ClipboardList size={20} /> },
-      { to: "/staff/completed", label: "Completed Leads", icon: <ClipboardList size={20} /> },
-      { to: "/staff/rejected", label: "Rejected Leads", icon: <ClipboardList size={20} /> },
+      { to: "/staff/followup", label: "Follow Up", icon: <ClipboardList size={20} /> },
+      { to: "/staff/visited", label: "Visited", icon: <ClipboardList size={20} /> },
     ],
   };
 

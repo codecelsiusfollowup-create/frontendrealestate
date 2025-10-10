@@ -18,6 +18,9 @@ import StaffNewLeads from "./pages/DealerDashboard/Unique-Leads/NewLeads";
 import StaffFilterLead from "./pages/DealerDashboard/Unique-Leads/FilterLead";
 import StaffAssign from "./pages/StaffDashboard/AssignLead/MyLead";
 import CreateLeadDealer from "./pages/DealerDashboard/Unique-Leads/CreateLead";
+import FollowupPage from "./pages/StaffDashboard/Followup/FollowupPage";
+import VisitedPage from "./pages/StaffDashboard/Visited/VisitedPage";
+import DealerLeadStatusPage from "./pages/DealerDashboard/LeadStatusPage/LeadStatusPage";
 
 
 function App() {
@@ -41,9 +44,12 @@ function App() {
         <Route path="/dealer/staffleadall" element={<StaffNewLeads/>}/>
         <Route path="/dealer/staffleadfilter" element={<StaffFilterLead/>}/>
         <Route path="/dealer/addlead" element={<CreateLeadDealer/>} />
+        <Route path="/dealer/leadstatus" element={<DealerLeadStatusPage/>} />
 
         <Route path="/staff" element={<ProtectedRoute><StaffDashboard /></ProtectedRoute>} />
         <Route path="/staff/assignlead" element={<StaffAssign/>}/>
+        <Route path="/staff/followup" element={<FollowupPage/>}/>
+        <Route path="/staff/visited" element={<VisitedPage/>}/>
        
       </Routes>
     </BrowserRouter>

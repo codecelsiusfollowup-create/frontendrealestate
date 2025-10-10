@@ -89,7 +89,7 @@ export default function Step7({ onBack, onSubmit }) {
 
    const handleCityChange = (city) => {
     setSelectedCity(city);
-    setSelectedArea(null); // reset area
+    setSelectedArea(null); 
     setFormData({ ...formData, city: city?.value, area: null });
   };
   return (
