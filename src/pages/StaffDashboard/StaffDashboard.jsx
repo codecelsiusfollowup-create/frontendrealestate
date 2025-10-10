@@ -4,7 +4,7 @@ import { useFCM } from "../../hooks/useFCM";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const BACKEND = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+const BACKEND = import.meta.env.VITE_BACKEND_URL || "https://backend-six-plum-52.vercel.app/";
 
 const Icon = ({ path, className = "w-6 h-6" }) => (
   <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">

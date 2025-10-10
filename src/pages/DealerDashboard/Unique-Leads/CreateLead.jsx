@@ -216,7 +216,7 @@ const handleSubmit = async (e) => {
 
   try {
     const res = await axios.post(
-      'http://localhost:5000/api/leads',
+      'https://backend-six-plum-52.vercel.app//api/leads',
       payload,
       { headers: { Authorization: `Bearer ${token}` } }
     );

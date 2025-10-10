@@ -225,7 +225,7 @@ export default function StaffAssign() {
     outcome: ''
   });
 
-  const API_BASE_URL = "http://localhost:5000/api";
+  const API_BASE_URL = "https://backend-six-plum-52.vercel.app//api";
 
   // Optimized input handlers using useCallback
   const handleFollowUpInputChange = useCallback((field, value) => {
