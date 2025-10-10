@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import DashboardLayout from "../../../components/DashboardLayout";
 
-const BACKEND = import.meta.env.VITE_BACKEND_URL || "https://backend-six-plum-52.vercel.app/";
+const BACKEND = import.meta.env.VITE_BACKEND_URL || "https://backend-six-plum-52.vercel.app";
 
 const STATUS_COLORS = {
   scheduled: "bg-blue-50 text-blue-700 border-blue-200",
