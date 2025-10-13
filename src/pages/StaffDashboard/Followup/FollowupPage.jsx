@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import DashboardLayout from "../../../components/DashboardLayout";
 
-const BACKEND = import.meta.env.VITE_BACKEND_URL || "https://backend-six-plum-52.vercel.app";
+const BACKEND =
+  import.meta.env.VITE_BACKEND_URL ||
+  "https://backend-six-plum-52.vercel.app";
 
 const STATUS_COLORS = {
   scheduled: "bg-blue-50 text-blue-700 border-blue-200",
@@ -22,14 +24,15 @@ const FollowupPage = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [updating, setUpdating] = useState(false);
 
+  // Fetch followups
   const fetchFollowups = async () => {
     setLoading(true);
     try {
-      const qs = statusFilter ? `?status=${encodeURIComponent(statusFilter)}` : "";
-      const { data } = await axios.get(`${BACKEND}/api/leads/followups${qs}`);
+      const query = statusFilter ? `?status=${encodeURIComponent(statusFilter)}` : "";
+      const { data } = await axios.get(`${BACKEND}/api/leads/followups${query}`);
       setLeads(Array.isArray(data.data) ? data.data : []);
     } catch (e) {
-      console.error(e);
+      console.error("Error fetching followups:", e);
       setLeads([]);
     } finally {
       setLoading(false);
@@ -40,17 +43,31 @@ const FollowupPage = () => {
     fetchFollowups();
   }, [statusFilter]);
 
-  const handleStatusChange = async (leadId, idx, newStatus) => {
+  // Update followup status
+  const handleStatusChange = async (leadId, followupIndex, newStatus) => {
     try {
       setUpdating(true);
-      await axios.patch(`${BACKEND}/api/leads/update-followup-status/${leadId}/${idx}`, {
+      await axios.patch(`${BACKEND}/api/leads/update-followup-status/${leadId}/${followupIndex}`, {
         status: newStatus,
       });
+      alert("Follow-up status updated successfully ✅");
       await fetchFollowups();
     } catch (e) {
-      alert("Update failed");
+      console.error("Error updating follow-up:", e);
+      alert("Update failed ❌");
     } finally {
       setUpdating(false);
+    }
+  };
+
+  // Trigger test notification
+  const triggerTestNotification = async () => {
+    try {
+      const { data } = await axios.get(`${BACKEND}/api/followup-notifications/trigger`);
+      alert(data.message || "Triggered ✅ Check device and console");
+    } catch (e) {
+      console.error("Error triggering notification:", e);
+      alert("Failed to trigger ❌");
     }
   };
 
@@ -67,21 +84,22 @@ const FollowupPage = () => {
       <td className="px-5 py-4 text-sm font-medium text-slate-900">{lead.fullName}</td>
       <td className="px-5 py-4 text-sm text-slate-600">{lead.email}</td>
       <td className="px-5 py-4 text-sm text-slate-600">{lead.phone}</td>
+
       <td className="px-5 py-4">
         <div className="space-y-2">
           {lead.followups.map((f, i) => (
-            <div key={i} className="flex items-center justify-between gap-3">
-              <div className="text-xs text-slate-500">
-                <span className="font-medium text-slate-700">{f.type.toUpperCase()}</span> •{" "}
-                {new Date(f.date).toLocaleDateString()} {f.time && `@ ${f.time}`}
-              </div>
+            <div key={i} className="text-xs text-slate-500">
+              <span className="font-medium text-slate-700">{f.type.toUpperCase()}</span> •{" "}
+              {new Date(f.date).toLocaleDateString()} {f.time && `@ ${f.time}`}
             </div>
           ))}
         </div>
       </td>
+
       <td className="px-5 py-4">
         <Badge status={lead.followups.at(-1)?.status || "pending"} />
       </td>
+
       <td className="px-5 py-4">
         <div className="space-y-2">
           {lead.followups.map((f, i) => (
@@ -106,8 +124,11 @@ const FollowupPage = () => {
   if (loading)
     return (
       <DashboardLayout>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-10 grid place-content-center text-slate-500">
-          <Icon path="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" className="w-8 h-8 animate-spin" />
+        <div className="max-w-7xl mx-auto px-4 py-10 grid place-content-center text-slate-500">
+          <Icon
+            path="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            className="w-8 h-8 animate-spin"
+          />
           <p className="mt-3">Loading follow-ups…</p>
         </div>
       </DashboardLayout>
@@ -116,7 +137,7 @@ const FollowupPage = () => {
   if (!leads.length)
     return (
       <DashboardLayout>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-10">
+        <div className="max-w-7xl mx-auto px-4 py-10">
           <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-12 text-center">
             <p className="text-slate-600">No follow-up leads found.</p>
             <button
@@ -132,10 +153,10 @@ const FollowupPage = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-10">
+      <div className="max-w-7xl mx-auto px-4 py-10">
         <div className="md:flex md:items-center md:justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Follow-up Leads</h1>
+            <h1 className="text-2xl font-bold text-slate-900">Follow-up Leads</h1>
             <p className="mt-1 text-sm text-slate-500">Track and update every follow-up interaction.</p>
           </div>
 
@@ -151,12 +172,23 @@ const FollowupPage = () => {
               <option value="completed">Completed</option>
               <option value="pending">Pending</option>
             </select>
+
             <button
               onClick={fetchFollowups}
-              className="ml-2 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="ml-2 inline-flex items-center px-3 py-2 border border-transparent text-sm rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
             >
-              <Icon path="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" className="mr-2" />
+              <Icon
+                path="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                className="mr-2"
+              />
               Refresh
+            </button>
+
+            <button
+              onClick={triggerTestNotification}
+              className="ml-2 inline-flex items-center px-3 py-2 border border-transparent text-sm rounded-md text-white bg-emerald-600 hover:bg-emerald-700"
+            >
+              Test Notification
             </button>
           </div>
         </div>
@@ -169,7 +201,6 @@ const FollowupPage = () => {
                   (h) => (
                     <th
                       key={h}
-                      scope="col"
                       className="px-5 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider"
                     >
                       {h}
