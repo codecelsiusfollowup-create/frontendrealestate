@@ -1,5 +1,7 @@
 // frontend/src/pages/staff/StaffAssign.jsx
 import React, { useEffect, useState, useRef, useCallback, memo } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import DashboardLayout from "../../../components/DashboardLayout";
 import { 
@@ -23,16 +25,9 @@ import {
   FiX
 } from "react-icons/fi";
 
-// Separate modal components to prevent re-rendering
-const FollowUpModal = memo(({ 
-  isOpen, 
-  onClose, 
-  followUpData, 
-  onSubmit, 
-  onInputChange 
-}) => {
+/* ---------- Re-usable modals (unchanged) ---------- */
+const FollowUpModal = memo(({ isOpen, onClose, followUpData, onSubmit, onInputChange }) => {
   if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose}>
       <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4" onClick={(e) => e.stopPropagation()}>
@@ -106,15 +101,8 @@ const FollowUpModal = memo(({
   );
 });
 
-const VisitModal = memo(({ 
-  isOpen, 
-  onClose, 
-  visitData, 
-  onSubmit, 
-  onInputChange 
-}) => {
+const VisitModal = memo(({ isOpen, onClose, visitData, onSubmit, onInputChange }) => {
   if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose}>
       <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4" onClick={(e) => e.stopPropagation()}>
@@ -195,6 +183,7 @@ const VisitModal = memo(({
   );
 });
 
+/* ---------- Main Component ---------- */
 export default function StaffAssign() {
   const [myLeads, setMyLeads] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -225,24 +214,23 @@ export default function StaffAssign() {
     outcome: ''
   });
 
-  const API_BASE_URL = "https://backend-six-plum-52.vercel.app/api";
+  const API_BASE_URL = "https://backend-six-plum-52.vercel.app";
 
-  // Optimized input handlers using useCallback
+  // ---------- Helpers ----------
+  const toastError = (msg) => toast.error(msg, { position: "top-right" });
+  const toastSuccess = (msg) => toast.success(msg, { position: "top-right" });
+  const toastInfo = (msg) => toast.info(msg, { position: "top-right" });
+
+  // ---------- Optimized input handlers ----------
   const handleFollowUpInputChange = useCallback((field, value) => {
-    setFollowUpData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setFollowUpData(prev => ({ ...prev, [field]: value }));
   }, []);
 
   const handleVisitInputChange = useCallback((field, value) => {
-    setVisitData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setVisitData(prev => ({ ...prev, [field]: value }));
   }, []);
 
-  // Fetch My Leads
+  // ---------- Fetch My Leads ----------
   const fetchMyLeads = async () => {
     try {
       setLoading(true);
@@ -250,53 +238,59 @@ export default function StaffAssign() {
       if (!token) throw new Error("Token not found");
 
       const res = await axios.get(
-        `${API_BASE_URL}/assignlead`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        `${API_BASE_URL}/api/assignlead`,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (res.data.success) {
         setMyLeads(res.data.data || []);
+        if (!res.data.data?.length) toastInfo("No leads assigned to you yet.");
       } else {
         setError(res.data.message || "Failed to fetch leads");
+        toastError(res.data.message || "Failed to fetch leads");
       }
     } catch (err) {
       console.error("Error fetching leads:", err.response?.data || err.message);
-      setError(err.response?.data?.message || err.message);
+      const msg = err.response?.data?.message || err.message;
+      setError(msg);
+      toastError(msg);
     } finally {
       setLoading(false);
     }
   };
 
-  // Add Follow-up
-  const addFollowUp = async () => {
-    if (!selectedLead) return alert("Select a lead first!");
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.post(
-        `${API_BASE_URL}/leads/${selectedLead._id}/followup`,
-        followUpData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (res.data.success) {
-        fetchMyLeads();
-        setFollowUpModal(false);
-        resetFollowUpForm();
-      }
-    } catch (err) {
-      console.error("Error adding follow-up:", err.response?.data || err.message);
-      setError("Failed to add follow-up");
+  // ---------- Add Follow-up ----------
+const addFollowUp = async () => {
+  if (!selectedLead) return toastError("Select a lead first!");
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.post(
+      `${API_BASE_URL}/api/leads/${selectedLead._id}/followup`,
+      followUpData, // include: minutesAhead OR date
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    if (res.data.success) {
+      fetchMyLeads();
+      setFollowUpModal(false);
+      resetFollowUpForm();
+      toastSuccess("Follow-up scheduled successfully!");
     }
-  };
+  } catch (err) {
+    console.error("Error adding follow-up:", err.response?.data || err.message);
+    const msg = err.response?.data?.message || "Failed to add follow-up";
+    setError(msg);
+    toastError(msg);
+  }
+};
 
-  // Add Visit
+
+  // ---------- Add Visit ----------
   const addVisit = async () => {
-    if (!selectedLead) return alert("Select a lead first!");
+    if (!selectedLead) return toastError("Select a lead first!");
     try {
       const token = localStorage.getItem("token");
       const res = await axios.post(
-        `${API_BASE_URL}/leads/${selectedLead._id}/visit`,
+        `${API_BASE_URL}/api/leads/${selectedLead._id}/visit`,
         visitData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -304,14 +298,17 @@ export default function StaffAssign() {
         fetchMyLeads();
         setVisitModal(false);
         resetVisitForm();
+        toastSuccess("Visit scheduled successfully!");
       }
     } catch (err) {
       console.error("Error adding visit:", err.response?.data || err.message);
-      setError("Failed to add visit");
+      const msg = err.response?.data?.message || "Failed to add visit";
+      setError(msg);
+      toastError(msg);
     }
   };
 
-  // Reset forms
+  // ---------- Reset Forms ----------
   const resetFollowUpForm = () => {
     setFollowUpData({
       type: 'call',
@@ -335,52 +332,41 @@ export default function StaffAssign() {
     });
   };
 
-  // Get Upcoming Activities
+  // ---------- Utility ----------
   const getUpcomingActivities = (lead) => {
     const now = new Date();
     const activities = [];
-    
-    if (lead.followUps) {
-      lead.followUps.forEach(followUp => {
-        const followUpDate = new Date(followUp.date + 'T' + followUp.time);
-        if (followUpDate >= now && followUp.status === 'scheduled') {
-          activities.push({
-            type: 'follow-up',
-            data: followUp,
-            date: followUpDate
-          });
-        }
-      });
-    }
-    
-    if (lead.visits) {
-      lead.visits.forEach(visit => {
-        const visitDate = new Date(visit.date + 'T' + visit.time);
-        if (visitDate >= now && visit.status === 'scheduled') {
-          activities.push({
-            type: 'visit',
-            data: visit,
-            date: visitDate
-          });
-        }
-      });
-    }
-    
+
+    lead.followups?.forEach(followUp => {
+      const followUpDate = new Date(followUp.date);
+      if (followUpDate >= now && followUp.status === 'scheduled') {
+        activities.push({ type: 'follow-up', data: followUp, date: followUpDate });
+      }
+    });
+
+    lead.visits?.forEach(visit => {
+      const visitDate = new Date(visit.date);
+      if (visitDate >= now && visit.status === 'scheduled') {
+        activities.push({ type: 'visit', data: visit, date: visitDate });
+      }
+    });
+
     return activities.sort((a, b) => a.date - b.date);
   };
 
-  // Check if lead has any activity
   const hasAnyActivity = (lead) => {
     const hasFollowUps = lead.followUps && lead.followUps.length > 0;
     const hasVisits = lead.visits && lead.visits.length > 0;
     return hasFollowUps || hasVisits;
   };
 
-  // Initial Fetch
+  // ---------- Initial Fetch ----------
   useEffect(() => {
     fetchMyLeads();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // ---------- Lead Score ----------
   const getLeadScore = (lead) => {
     let score = 0;
     if (lead.budget && lead.budget !== "N/A") score += 25;
@@ -388,21 +374,19 @@ export default function StaffAssign() {
     if (lead.phone && lead.email) score += 15;
     if (lead.projectName && lead.projectName !== "N/A") score += 20;
     if (lead.remark && lead.remark !== "N/A") score += 20;
-    
     if (lead.followUps && lead.followUps.length > 0) score += 10;
     if (lead.visits && lead.visits.length > 0) score += 15;
-    
     return Math.min(score, 100);
   };
 
+  // ---------- Lead Status ----------
   const getLeadStatus = (lead) => {
     const daysSinceCreated = Math.floor(
       (new Date() - new Date(lead.createdAt)) / (1000 * 60 * 60 * 24)
     );
-    
     const activities = getUpcomingActivities(lead);
     const recentActivity = activities.length > 0;
-    
+
     if (recentActivity) return "active";
     if (daysSinceCreated <= 1) return "new";
     if (daysSinceCreated <= 7) return "warm";
@@ -410,10 +394,10 @@ export default function StaffAssign() {
     return "cold";
   };
 
+  // ---------- Filtering & Sorting ----------
   const filteredAndSortedLeads = myLeads
     .filter(lead => {
       const leadHasActivity = hasAnyActivity(lead);
-      
       if (filter === "uncontacted") return !leadHasActivity;
       if (filter === "all") return true;
       if (filter === "active") return getLeadStatus(lead) === "active";
@@ -436,6 +420,7 @@ export default function StaffAssign() {
       return 0;
     });
 
+  // ---------- UI Colors ----------
   const getStatusColor = (status) => {
     switch (status) {
       case "active": return "bg-blue-100 text-blue-800";
@@ -453,10 +438,12 @@ export default function StaffAssign() {
     return "text-red-600";
   };
 
+  /* ---------- Render ---------- */
   return (
     <DashboardLayout title="Lead Management Dashboard">
+      <ToastContainer autoClose={3000} hideProgressBar={false} closeOnClick />
       <div className="p-6 bg-gray-50 min-h-screen">
-        {/* Header Section */}
+        {/* Header */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
             {filter === "uncontacted" ? "Fresh Leads - Uncontacted" : "My Assigned Leads"}
@@ -531,9 +518,7 @@ export default function StaffAssign() {
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Filter Leads
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Filter Leads</label>
               <select
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
@@ -547,9 +532,7 @@ export default function StaffAssign() {
               </select>
             </div>
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Sort By
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
@@ -564,7 +547,7 @@ export default function StaffAssign() {
           </div>
         </div>
 
-        {/* Loading State */}
+        {/* Loading */}
         {loading && (
           <div className="flex justify-center items-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -572,7 +555,7 @@ export default function StaffAssign() {
           </div>
         )}
 
-        {/* Error State */}
+        {/* Error */}
         {error && (
           <div className="p-4 bg-red-50 border border-red-200 rounded-lg mb-6">
             <div className="flex items-center">
@@ -588,7 +571,7 @@ export default function StaffAssign() {
           </div>
         )}
 
-        {/* Empty State for Uncontacted Leads */}
+        {/* Empty States */}
         {!loading && !error && filteredAndSortedLeads.length === 0 && filter === "uncontacted" && (
           <div className="text-center py-12">
             <div className="mx-auto w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-4">
@@ -601,7 +584,6 @@ export default function StaffAssign() {
           </div>
         )}
 
-        {/* Empty State for Other Filters */}
         {!loading && !error && filteredAndSortedLeads.length === 0 && filter !== "uncontacted" && (
           <div className="text-center py-12">
             <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
@@ -789,7 +771,7 @@ export default function StaffAssign() {
           </div>
         )}
 
-        {/* Modals - Rendered outside the main component flow */}
+        {/* Modals */}
         <FollowUpModal 
           isOpen={followUpModal}
           onClose={() => setFollowUpModal(false)}
