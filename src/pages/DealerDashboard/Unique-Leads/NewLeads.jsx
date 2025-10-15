@@ -100,7 +100,7 @@ export default function StaffNewLeads() {
   useEffect(() => {
     const fetchLeads = async () => {
       try {
-        const res = await axios.get("https://backend-six-plum-52.vercel.app/api/leads");
+        const res = await axios.get("http://localhost:5000/api/leads/getlead");
         if (Array.isArray(res.data)) {
           setLeads(res.data);
         } else if (Array.isArray(res.data.data)) {

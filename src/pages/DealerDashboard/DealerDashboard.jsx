@@ -78,28 +78,28 @@ export default function DealerDashboard() {
   }, [user, navigate]);
 
   /* ---------- fetch dashboard data ---------- */
-  useEffect(() => {
-    if (!dealerId) return;
-    (async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const [statRes, actRes] = await Promise.all([
-          axios.get(`${BACKEND}/api/dealer/dashboard-stats/${dealerId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${BACKEND}/api/dealer/recent-activities/${dealerId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
-        setStats(statRes.data.data);
-        setRecents(actRes.data.data);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [dealerId]);
+  // useEffect(() => {
+  //   if (!dealerId) return;
+  //   (async () => {
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       const [statRes, actRes] = await Promise.all([
+  //         axios.get(`${BACKEND}/api/dealer/dashboard-stats/${dealerId}`, {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         }),
+  //         axios.get(`${BACKEND}/api/dealer/recent-activities/${dealerId}`, {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         }),
+  //       ]);
+  //       setStats(statRes.data.data);
+  //       setRecents(actRes.data.data);
+  //     } catch (e) {
+  //       console.error(e);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   })();
+  // }, [dealerId]);
 
   /* ---------- handlers ---------- */
   const go = (path) => navigate(path);
