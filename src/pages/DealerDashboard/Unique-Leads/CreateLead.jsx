@@ -1,12 +1,10 @@
-// frontend/src/pages/dealer/CreateLeadDealer.jsx
+// CreateLeadDealer.jsx
 import React, { useState } from "react";
 import Select from "react-select";
-import DashboardLayout from "../../../components/DashboardLayout";
+import DashboardLayout from "../../../components/DashboardLayout"; // ← change path if needed
 import axios from "axios";
-import { cityOptions } from "../../../data/cities";
-import { areaMap } from "../../../data/areas";
 
-/* ---------- OPTIONS (unchanged) ---------- */
+/* --------------------  OPTIONS  -------------------- */
 const leadSourceOptions = [
   { value: "campaign", label: "Campaign" },
   { value: "cold calling", label: "Cold calling" },
@@ -124,7 +122,28 @@ const leadStatusOptions = [
   { value: "Revisit", label: "Revisit" },
 ];
 
-/* ---------- MAIN COMPONENT ---------- */
+/* --------------------  CITY / AREA DATA  -------------------- */
+const cityOptions = [
+  { value: "Gurgaon", label: "Gurgaon" },
+  { value: "Delhi",  label: "Delhi"  },
+  { value: "Noida",  label: "Noida"  },
+];
+const areaMap = {
+  Gurgaon: [
+    { value: "Sector 50", label: "Sector 50" },
+    { value: "DLF Phase 5", label: "DLF Phase 5" },
+  ],
+  Delhi: [
+    { value: "Connaught Place", label: "Connaught Place" },
+    { value: "Karol Bagh", label: "Karol Bagh" },
+  ],
+  Noida: [
+    { value: "Sector 18", label: "Sector 18" },
+    { value: "Sector 62", label: "Sector 62" },
+  ],
+};
+
+/* --------------------  COMPONENT  -------------------- */
 export default function CreateLeadDealer() {
   const [selectedCity, setSelectedCity] = useState(null);
   const [selectedArea, setSelectedArea] = useState(null);
@@ -151,10 +170,9 @@ export default function CreateLeadDealer() {
     isActive: true,
     leadStatus: "Fresh Leads",
   };
-
   const [formData, setFormData] = useState(initialForm);
 
-  /* ---------- HANDLERS ---------- */
+  /* ----------  HANDLERS  ---------- */
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
@@ -162,15 +180,12 @@ export default function CreateLeadDealer() {
 
   const handleSelectChange = (selectedOption, { name }) => {
     const value = selectedOption ? selectedOption.value : "";
-
     let updated = { ...formData, [name]: value };
-
     if (name === "property") {
       updated.propertyType = "";
       updated.typology = "";
     }
     if (name === "propertyType") updated.typology = "";
-
     setFormData(updated);
   };
 
@@ -179,7 +194,6 @@ export default function CreateLeadDealer() {
     setSelectedArea(null);
     setFormData((f) => ({ ...f, city: city?.value || "", area: "" }));
   };
-
   const handleAreaChange = (area) => {
     setSelectedArea(area);
     setFormData((f) => ({ ...f, area: area?.value || "" }));
@@ -191,53 +205,44 @@ export default function CreateLeadDealer() {
     setSelectedArea(null);
   };
 
-  /* ---------- SUBMIT ---------- */
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (submitting) return;
-  setSubmitting(true);
+  /* ----------  SUBMIT  ---------- */
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
 
-  // 1.  clean empty → null
-  const payload = Object.fromEntries(
-    Object.entries(formData).map(([k, v]) => [k, v === '' ? null : v])
-  );
-
-  // 2.  auth token
-  const token = localStorage.getItem('token');
-  if (!token) {
-    alert('❌ No auth token found – please log in again');
-    setSubmitting(false);
-    return;
-  }
-
-  // 3.  dump what we send
-  console.log('🚀 PAYLOAD ABOUT TO BE SENT', payload);
-  console.log('🔑 Authorization', `Bearer ${token}`);
-
-  try {
-    const res = await axios.post(
-      'https://backend-six-plum-52.vercel.app/api/leads',
-      payload,
-      { headers: { Authorization: `Bearer ${token}` } }
+    const payload = Object.fromEntries(
+      Object.entries(formData).map(([k, v]) => [k, v === "" ? null : v])
     );
-    console.log('✅ SERVER RESPONSE', res.data);
-    alert('✅ Lead created successfully!');
-    handleReset();
-  } catch (err) {
-    /* 4.  grab the real server message */
-    const serverMsg =
-      err.response?.data?.message ||
-      err.response?.data?.error ||
-      err.message ||
-      'Network error';
-    console.error('❌ SERVER 500 BODY', err.response?.data);
-    alert(`❌ Server error: ${serverMsg}`);
-  } finally {
-    setSubmitting(false);
-  }
-};
 
-  /* ---------- RENDER ---------- */
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("❌ No auth token found – please log in again");
+      setSubmitting(false);
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        "https://backend-six-plum-52.vercel.app/api/leads",
+        payload,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      alert("✅ Lead created successfully!");
+      handleReset();
+    } catch (err) {
+      const msg =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.message ||
+        "Network error";
+      alert(`❌ Server error: ${msg}`);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  /* ----------  RENDER  ---------- */
   return (
     <DashboardLayout>
       <div className="p-6 bg-white rounded-lg shadow-md">
@@ -272,7 +277,6 @@ const handleSubmit = async (e) => {
               isClearable
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium mb-1">Area</label>
             <Select
@@ -287,6 +291,17 @@ const handleSubmit = async (e) => {
 
           {/* property selectors */}
           <div>
+            <label className="block text-sm font-medium mb-1">Property</label>
+            <Select
+              name="property"
+              options={dropdownOptions.property}
+              value={dropdownOptions.property.find((o) => o.value === formData.property)}
+              onChange={handleSelectChange}
+              placeholder="Select Property"
+              isClearable
+            />
+          </div>
+          <div>
             <label className="block text-sm font-medium mb-1">Property Type</label>
             <Select
               name="propertyType"
@@ -299,7 +314,6 @@ const handleSubmit = async (e) => {
               isClearable
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium mb-1">Typology</label>
             <Select
@@ -355,7 +369,6 @@ const handleSubmit = async (e) => {
               className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none"
             />
           </div>
-
           <div className="md:col-span-3">
             <label className="block text-sm font-medium mb-1">Amenities</label>
             <textarea

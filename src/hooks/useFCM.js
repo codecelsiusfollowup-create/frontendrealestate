@@ -7,10 +7,10 @@ import { useNavigate } from "react-router-dom";
 
 export const useFCM = (staffId) => {
   const navigate = useNavigate();
-  const isInitialized = useRef(false); // ✅ prevent double setup
+  const isInitialized = useRef(false); 
 
   useEffect(() => {
-    if (!staffId || isInitialized.current) return; // ✅ only once
+    if (!staffId || isInitialized.current) return;
     isInitialized.current = true;
 
     const setupFCM = async () => {
@@ -28,7 +28,7 @@ export const useFCM = (staffId) => {
 
         // 3️⃣ Get FCM token
         const token = await getToken(messaging, {
-          vapidKey: "BC9GvlV4C2-XbwtOKHg0UzHmUcMMUJm_dNRFcESviCJanUNhxR0t6Tdcc3JYdaRC7oOK6dkTZavEcOWtGZpNho4",
+          vapidKey: "BI5tHNHhx-IqcnGkVOtQsakOk94qxuD_ywNsTVj6FVCJm93Ithoh2UUrpjQGwgLLUEI3NptQS-MyWlS7gmoZXQs",
           serviceWorkerRegistration: swRegistration,
         });
 

@@ -214,7 +214,7 @@ export default function StaffAssign() {
     outcome: ''
   });
 
-  const API_BASE_URL = "https://backend-six-plum-52.vercel.app";
+  const API_BASE_URL = "http://localhost:5000";
 
   // ---------- Helpers ----------
   const toastError = (msg) => toast.error(msg, { position: "top-right" });
@@ -262,27 +262,37 @@ export default function StaffAssign() {
   // ---------- Add Follow-up ----------
 const addFollowUp = async () => {
   if (!selectedLead) return toastError("Select a lead first!");
+
   try {
     const token = localStorage.getItem("token");
+    if (!token) throw new Error("Missing auth token");
+
+    // Auto-schedule: if user didn’t pick date/time, default to +2 minutes ahead
+    let payload = { ...followUpData };
+    if (!payload.date || !payload.time) {
+      payload.minutesAhead = 2;
+    } else {
+      payload.date = new Date(`${payload.date}T${payload.time}:00`).toISOString();
+    }
+
     const res = await axios.post(
-      `${API_BASE_URL}/api/leads/${selectedLead._id}/followup`,
-      followUpData, // include: minutesAhead OR date
+      `http://localhost:5000/api/leads/${selectedLead._id}/followup`,
+      payload,
       { headers: { Authorization: `Bearer ${token}` } }
     );
+
     if (res.data.success) {
       fetchMyLeads();
       setFollowUpModal(false);
       resetFollowUpForm();
-      toastSuccess("Follow-up scheduled successfully!");
+      toastSuccess(res.data.message || "Follow-up scheduled successfully!");
     }
+
   } catch (err) {
     console.error("Error adding follow-up:", err.response?.data || err.message);
-    const msg = err.response?.data?.message || "Failed to add follow-up";
-    setError(msg);
-    toastError(msg);
+    toastError(err.response?.data?.message || "Failed to add follow-up");
   }
 };
-
 
   // ---------- Add Visit ----------
   const addVisit = async () => {

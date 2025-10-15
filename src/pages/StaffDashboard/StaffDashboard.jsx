@@ -56,26 +56,26 @@ export default function StaffDashboard() {
   useFCM(staffId);
 
   /* ---------- fetch stats & recent activities ---------- */
-  useEffect(() => {
-    if (!staffId) return;
-    (async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const [statsRes, actRes] = await Promise.all([
-          axios.get(`${BACKEND}/api/staff/dashboard-stats/${staffId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${BACKEND}/api/staff/recent-activities/${staffId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
-        setStats(statsRes.data.data);
-        setActivities(actRes.data.data || []);
-      } catch (e) {
-        console.error(e);
-      }
-    })();
-  }, [staffId]);
+  // useEffect(() => {
+  //   if (!staffId) return;
+  //   (async () => {
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       const [statsRes, actRes] = await Promise.all([
+  //         axios.get(`${BACKEND}/api/staff/dashboard-stats/${staffId}`, {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         }),
+  //         axios.get(`${BACKEND}/api/staff/recent-activities/${staffId}`, {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         }),
+  //       ]);
+  //       setStats(statsRes.data.data);
+  //       setActivities(actRes.data.data || []);
+  //     } catch (e) {
+  //       console.error(e);
+  //     }
+  //   })();
+  // }, [staffId]);
 
   if (!userData) return <p className="p-6">Please login to access the dashboard.</p>;
 
