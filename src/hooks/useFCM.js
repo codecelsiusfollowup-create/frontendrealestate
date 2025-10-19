@@ -5,12 +5,16 @@ import { messaging } from "../firebaseConfig";
 import { getToken, onMessage } from "firebase/messaging";
 import { useNavigate } from "react-router-dom";
 
-export const useFCM = (staffId) => {
-  const navigate = useNavigate();
-  const isInitialized = useRef(false); // ✅ prevent double setup
+/**
+ * useFCM hook
+ * @param {string} leadPhone - Lead ka phone number, jiske saath token save hoga
+ */
 
+export const useFCM = (staffId,leadPhone) => {
+  const navigate = useNavigate();
+  const isInitialized = useRef(false);
   useEffect(() => {
-    if (!staffId || isInitialized.current) return; // ✅ only once
+    if (!leadPhone || !staffId || isInitialized.current) return; // ✅ only once
     isInitialized.current = true;
 
     const setupFCM = async () => {
@@ -40,6 +44,7 @@ export const useFCM = (staffId) => {
         // 4️⃣ Save token to backend
         await axios.post("https://backend-six-plum-52.vercel.app/api/notifications/save-token", {
           staffId,
+          phone: leadPhone,
           token,
         });
         console.log("✅ FCM token saved:", token);
