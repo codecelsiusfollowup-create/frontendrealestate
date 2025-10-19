@@ -214,7 +214,7 @@ export default function StaffAssign() {
     outcome: ''
   });
 
-  const API_BASE_URL = "http://localhost:5000";
+  const API_BASE_URL = "https://backend-six-plum-52.vercel.app";
 
   // ---------- Helpers ----------
   const toastError = (msg) => toast.error(msg, { position: "top-right" });
@@ -276,7 +276,7 @@ const addFollowUp = async () => {
     }
 
     const res = await axios.post(
-      `http://localhost:5000/api/leads/${selectedLead._id}/followup`,
+      `https://backend-six-plum-52.vercel.app/api/leads/${selectedLead._id}/followup`,
       payload,
       { headers: { Authorization: `Bearer ${token}` } }
     );
